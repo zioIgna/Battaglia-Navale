@@ -10,18 +10,22 @@ import { MessagesService } from '../messages.service';
 export class MessageCreateComponent implements OnInit {
   autore = '';
   contenuto = '';
+  destinatario = '';
 
   constructor(private msgService: MessagesService) { }
 
   onSend() {
     const message: Message = {
+      id: null,
       autore: this.autore,
       contenuto: this.contenuto,
+      destinatario: this.destinatario,
       timeStamp: new Date().toISOString()
     };
     this.msgService.addMessage(message);
     this.autore = '';
     this.contenuto = '';
+    this.destinatario = '';
   }
 
   ngOnInit() {

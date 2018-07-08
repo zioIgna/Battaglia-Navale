@@ -4,6 +4,9 @@
     </mat-form-field>    
     <mat-form-field>
         <textarea matInput cols="6" [(ngModel)]="contenuto" placeholder="contenuto"></textarea>
-    </mat-form-field>    
+    </mat-form-field>
+    <mat-form-field>
+        <textarea matInput cols="6" [(ngModel)]="destinatario" placeholder="destinatario"></textarea>
+    </mat-form-field> 
     <button mat-raised-button color="primary" (click)="onSend()">Invia</button>
 </mat-card>
