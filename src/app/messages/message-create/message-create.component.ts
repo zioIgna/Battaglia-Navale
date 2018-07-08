@@ -1,6 +1,6 @@
+import { Component, OnInit } from '@angular/core';
 import { Message } from './../message.model';
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { MessagesService } from '../messages.service';
 
 @Component({
   selector: 'app-message-create',
@@ -10,9 +10,8 @@ import { NgForm } from '@angular/forms';
 export class MessageCreateComponent implements OnInit {
   autore = '';
   contenuto = '';
-  @Output() msgSent = new EventEmitter<Message>();
 
-  constructor() { }
+  constructor(private msgService: MessagesService) { }
 
   onSend() {
     const message: Message = {
@@ -20,7 +19,9 @@ export class MessageCreateComponent implements OnInit {
       contenuto: this.contenuto,
       timeStamp: new Date().toISOString()
     };
-    this.msgSent.emit(message);
+    this.msgService.addMessage(message);
+    this.autore = '';
+    this.contenuto = '';
   }
 
   ngOnInit() {

@@ -1,12 +1,14 @@
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Message } from './../message.model';
-import { Component, OnInit, Input } from '@angular/core';
+import { MessagesService } from '../messages.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-msg-list',
   templateUrl: './msg-list.component.html',
   styleUrls: ['./msg-list.component.css']
 })
-export class MsgListComponent implements OnInit {
+export class MsgListComponent implements OnInit, OnDestroy {
 
   // messages = [
   //   { autore: 'Primo utente', contenuto: 'Primo messaggio di registrazione' },
@@ -14,11 +16,21 @@ export class MsgListComponent implements OnInit {
   //   { autore: 'Terzo utente', contenuto: 'Terzo messaggio di registrazione' }
   // ];
 
-  @Input() messages: Message[] = [];
+  messages: Message[] = [];
+  msgSub: Subscription;
 
-  constructor() { }
+  constructor(public msgService: MessagesService) {
+
+  }
 
   ngOnInit() {
+    this.messages = this.msgService.getMessages();
+    this.msgSub = this.msgService.getMessagesUpdatedListener()
+      .subscribe((fetchedMessages: Message[]) => this.messages = fetchedMessages);
+  }
+
+  ngOnDestroy() {
+    this.msgSub.unsubscribe();
   }
 
 }
