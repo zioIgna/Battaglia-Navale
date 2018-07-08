@@ -1,0 +1,9 @@
+<mat-card>
+    <mat-form-field>
+        <textarea matInput cols="6" [(ngModel)]="autore"></textarea>
+    </mat-form-field>    
+    <mat-form-field>
+        <textarea matInput cols="6" [(ngModel)]="contenuto"></textarea>
+    </mat-form-field>    
+    <button mat-raised-button color="primary" (click)="onSend()">Invia</button>
+</mat-card>

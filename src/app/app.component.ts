@@ -1,3 +1,4 @@
+import { Message } from './messages/message.model';
 import { Component } from '@angular/core';
 
 @Component({
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+
+  storedMessages: Message[] = [];
+
+  onMsgSent(message) {
+    this.storedMessages.push(message);
+  }
+
 }
