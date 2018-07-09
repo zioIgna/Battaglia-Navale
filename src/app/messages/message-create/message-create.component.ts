@@ -16,7 +16,7 @@ export class MessageCreateComponent implements OnInit {
 
   onSend() {
     const message: Message = {
-      id: null,
+      // id: null,
       autore: this.autore,
       contenuto: this.contenuto,
       destinatario: this.destinatario,

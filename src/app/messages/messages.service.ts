@@ -2,6 +2,7 @@ import { Message } from './message.model';
 import { Injectable } from '../../../node_modules/@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient } from '../../../node_modules/@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class MessagesService {
@@ -11,9 +12,19 @@ export class MessagesService {
     constructor(private http: HttpClient) { }
 
     getMessages() {
-        this.http.get<{ note: string, messages: Message[] }>('http://localhost:3000/api/messages')
-            .subscribe((msgData) => {
-                this.messages = msgData.messages;
+        this.http.get<{ note: string, messages: any }>('http://localhost:3000/api/messages')
+            .pipe(map((msgData) => {
+                return msgData.messages.map(message => {
+                    return {
+                        autore: message.autore,
+                        contenuto: message.contenuto,
+                        destinatario: message.destinatario,
+                        timeStamp: message.date
+                    };
+                });
+            }))
+            .subscribe((transformedMsgData) => {
+                this.messages = transformedMsgData;
                 this.messagesUpdated.next([...this.messages]);
             });
     }
@@ -24,11 +35,11 @@ export class MessagesService {
 
     addMessage(message: Message) {
         const newMessage: Message = {
-            id: null,
+            // id: null,
             autore: message.autore,
             contenuto: message.contenuto,
-            destinatario: null,
-            timeStamp: message.timeStamp
+            destinatario: message.destinatario,
+            timeStamp: message.timeStamp    // in realtà questo parametro non viene considerato dal server
         };
         this.http.post<{ note: string }>('http://localhost:3000/api/messages', newMessage)
             .subscribe((responseData) => {
@@ -38,3 +49,5 @@ export class MessagesService {
             });
     }
 }
+// Password per cluster Mongodb:
+// PozKas6M2IC1JgR7
