@@ -1,12 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const Message = require('./models/message');
+const User = require('./models/user.js');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://igna:PozKas6M2IC1JgR7@cluster0-3typv.mongodb.net/chat?retryWrites=true', { useNewUrlParser: true })
+mongoose.connect('mongodb+srv://igna:PozKas6M2IC1JgR7@cluster0-3typv.mongodb.net/chat', { useNewUrlParser: true })
     .then(() => {
         console.log('Connected to database!')
     })
@@ -50,5 +52,25 @@ app.get('/api/messages', (req, res, next) => {
         });
     });
 });
+
+app.post('/api/user/signup', (req, res, next) =>{
+    bcrypt.hash(req.body.password, 10).then(hash => {
+        const user = new User({
+            email: req.body.email,
+            password: hash
+        });
+        user.save().then(result => {
+            res.status(201).json({
+                message: 'User created',
+                result: result
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+    });
+})
 
 module.exports = app;

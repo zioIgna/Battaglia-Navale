@@ -1,7 +1,8 @@
-import { Message } from './message.model';
+import { Router } from '@angular/router';
 import { Injectable } from '../../../node_modules/@angular/core';
-import { Subject } from 'rxjs';
 import { HttpClient } from '../../../node_modules/@angular/common/http';
+import { Message } from './message.model';
+import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -9,7 +10,7 @@ export class MessagesService {
     private messages: Message[] = [];
     private messagesUpdated = new Subject<Message[]>();
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private router: Router) { }
 
     getMessages() {
         this.http.get<{ note: string, messages: any }>('http://localhost:3000/api/messages')
@@ -46,6 +47,7 @@ export class MessagesService {
                 console.log(responseData.note);
                 this.messages.push(newMessage);
                 this.messagesUpdated.next([...this.messages]);
+                this.router.navigate(['/']);
             });
     }
 }

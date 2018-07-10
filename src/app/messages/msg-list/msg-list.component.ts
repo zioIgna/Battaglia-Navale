@@ -18,15 +18,20 @@ export class MsgListComponent implements OnInit, OnDestroy {
 
   messages: Message[] = [];
   msgSub: Subscription;
+  isLoading = false;
 
   constructor(public msgService: MessagesService) {
 
   }
 
   ngOnInit() {
+    this.isLoading = true;
     this.msgService.getMessages();
     this.msgSub = this.msgService.getMessagesUpdatedListener()
-      .subscribe((fetchedMessages: Message[]) => this.messages = fetchedMessages);
+      .subscribe((fetchedMessages: Message[]) => {
+        this.isLoading = false;
+        this.messages = fetchedMessages;
+      });
   }
 
   ngOnDestroy() {

@@ -11,6 +11,7 @@ export class MessageCreateComponent implements OnInit {
   autore = '';
   contenuto = '';
   destinatario = '';
+  isLoading = false;
 
   constructor(private msgService: MessagesService) { }
 
@@ -22,6 +23,7 @@ export class MessageCreateComponent implements OnInit {
       destinatario: this.destinatario,
       timeStamp: new Date().toISOString()
     };
+    this.isLoading = true;
     this.msgService.addMessage(message);
     this.autore = '';
     this.contenuto = '';

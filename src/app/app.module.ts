@@ -6,19 +6,33 @@ import { HttpClientModule } from '../../node_modules/@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { MessageCreateComponent } from './messages/message-create/message-create.component';
-import { MatInputModule, MatCardModule, MatButtonModule, MatToolbarModule, MatExpansionModule } from '@angular/material';
+import {
+  MatInputModule,
+  MatCardModule,
+  MatButtonModule,
+  MatToolbarModule,
+  MatExpansionModule,
+  MatProgressSpinnerModule
+} from '@angular/material';
 import { HeaderComponent } from './header/header.component';
 import { MsgListComponent } from './messages/msg-list/msg-list.component';
+import { AppRoutingModudle } from './app-routing.module';
+import { LoginComponent } from './auth/login/login.component';
+import { SignUpComponent } from './auth/signup/signup.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     MessageCreateComponent,
     HeaderComponent,
-    MsgListComponent
+    MsgListComponent,
+    LoginComponent,
+    SignUpComponent
   ],
   imports: [
     BrowserModule,
+    AppRoutingModudle,
     BrowserAnimationsModule,
     FormsModule,
     MatInputModule,
@@ -26,6 +40,7 @@ import { MsgListComponent } from './messages/msg-list/msg-list.component';
     MatButtonModule,
     MatToolbarModule,
     MatExpansionModule,
+    MatProgressSpinnerModule,
     HttpClientModule
   ],
   providers: [],

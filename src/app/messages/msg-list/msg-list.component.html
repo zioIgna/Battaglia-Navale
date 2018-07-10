@@ -1,4 +1,5 @@
-<mat-accordion multi="true" *ngIf="messages.length > 0">
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+<mat-accordion multi="true" *ngIf="messages.length > 0 && !isLoading">
   <mat-expansion-panel *ngFor="let msg of messages">
       <mat-expansion-panel-header>
           {{msg.autore}}
@@ -9,5 +10,5 @@
       <p class="mat-caption">{{msg.timeStamp}}</p>
     </mat-expansion-panel>
 </mat-accordion>
-<p class="info-text mat-body-1" *ngIf="messages.length <=0" >No messages added yet!</p>
+<p class="info-text mat-body-1" *ngIf="messages.length <=0 && !isLoading">No messages added yet!</p>
 <p class="info-text mat-body-1" *ngIf="messages[0]?.timeStamp<messages[1]?.timeStamp">{{messages[0].autore}}</p>

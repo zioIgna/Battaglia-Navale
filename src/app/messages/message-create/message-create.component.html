@@ -1,5 +1,6 @@
 <mat-card>
-    <mat-form-field>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+    <mat-form-field *ngIf="!isLoading">
         <textarea matInput cols="6" [(ngModel)]="autore" placeholder="autore"></textarea>
     </mat-form-field>    
     <mat-form-field>
