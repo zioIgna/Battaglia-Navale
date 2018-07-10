@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const Message = require('./models/message');
 const User = require('./models/user.js');
@@ -53,7 +54,7 @@ app.get('/api/messages', (req, res, next) => {
     });
 });
 
-app.post('/api/user/signup', (req, res, next) =>{
+app.post('/api/user/signup', (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then(hash => {
         const user = new User({
             email: req.body.email,
@@ -65,12 +66,45 @@ app.post('/api/user/signup', (req, res, next) =>{
                 result: result
             });
         })
+            .catch(err => {
+                res.status(500).json({
+                    error: err
+                });
+            });
+    });
+});
+
+app.post('/api/user/login', (req, res, next) => {
+    let fetchedUser;
+    User.findOne({ email: req.body.email }).then(user => {
+        if (!user) {
+            return res.status(401).json({
+                message: 'Authentication failed'
+            });
+        }
+        fetchedUser = user;
+        return bcrypt.compare(req.body.password, user.password);
+    })
+        .then(result => {
+            if (!result) {
+                return res.status(401).json({
+                    message: 'Authentication failed'
+                });
+            }
+            const token = jwt.sign(
+                { email: fetchedUser.email, userId: fetchedUser._id },
+                'password_segreta_per_la_cifratura',
+                {expiresIn: '1h'}
+            );
+            res.status(200).json({
+                token: token
+            });
+        })
         .catch(err => {
-            res.status(500).json({
-                error: err
+            return res.status(401).json({
+                message: 'Authentication failed'
             });
         });
-    });
-})
+});
 
 module.exports = app;
