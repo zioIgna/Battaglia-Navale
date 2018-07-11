@@ -1,8 +1,9 @@
+import { AuthInterceptor } from './auth/auth-interceptor';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '../../node_modules/@angular/forms';
-import { HttpClientModule } from '../../node_modules/@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '../../node_modules/@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { MessageCreateComponent } from './messages/message-create/message-create.component';
@@ -43,7 +44,7 @@ import { SignUpComponent } from './auth/signup/signup.component';
     MatProgressSpinnerModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const checkAuth = require('./middleware/check-auth');
 
 const Message = require('./models/message');
 const User = require('./models/user.js');
@@ -21,12 +22,12 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
     next();
 })
 
-app.post('/api/messages', (req, res, next) => {
+app.post('/api/messages', checkAuth, (req, res, next) => {
     const message = new Message({
         autore: req.body.autore,
         contenuto: req.body.contenuto,
@@ -39,7 +40,7 @@ app.post('/api/messages', (req, res, next) => {
     });
 });
 
-app.get('/api/messages', (req, res, next) => {
+app.get('/api/messages', checkAuth, (req, res, next) => {
     // const messages = [
     //     { id: 'pqwe0rjfa3', autore: 'autore 1', contenuto: 'primo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:34:44.117Z' },
     //     { id: 'weorrs3gu', autore: 'autore 2', contenuto: 'secondo messaggio', destinatario: 'autore 1', timestamp: '2018-07-08T20:35:26.866Z' },
@@ -85,26 +86,27 @@ app.post('/api/user/login', (req, res, next) => {
         fetchedUser = user;
         return bcrypt.compare(req.body.password, user.password);
     })
-        .then(result => {
-            if (!result) {
-                return res.status(401).json({
-                    message: 'Authentication failed'
-                });
-            }
-            const token = jwt.sign(
-                { email: fetchedUser.email, userId: fetchedUser._id },
-                'password_segreta_per_la_cifratura',
-                {expiresIn: '1h'}
-            );
-            res.status(200).json({
-                token: token
-            });
-        })
-        .catch(err => {
+    .then(result => {
+        if (!result) {
             return res.status(401).json({
                 message: 'Authentication failed'
             });
+        }
+        const token = jwt.sign(
+            { email: fetchedUser.email, userId: fetchedUser._id },
+            'password_segreta_per_la_cifratura',
+            { expiresIn: '1h' }
+        );
+        res.status(200).json({
+            token: token,
+            expiresIn: 3600
         });
+    })
+    .catch(err => {
+        return res.status(401).json({
+            message: 'Authentication failed'
+        });
+    });
 });
 
 module.exports = app;
