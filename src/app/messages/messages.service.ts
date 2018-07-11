@@ -25,6 +25,7 @@ export class MessagesService {
                 });
             }))
             .subscribe((transformedMsgData) => {
+                console.log(transformedMsgData);
                 this.messages = transformedMsgData;
                 this.messagesUpdated.next([...this.messages]);
             });

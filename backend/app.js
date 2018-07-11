@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 
 app.post('/api/messages', checkAuth, (req, res, next) => {
     const message = new Message({
-        autore: req.body.autore,
+        autore: req.userData.userId,
         contenuto: req.body.contenuto,
         destinatario: req.body.destinatario
     });
