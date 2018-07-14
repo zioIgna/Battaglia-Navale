@@ -15,21 +15,23 @@ export class MessagesService {
     constructor(private http: HttpClient) { }
 
     getMessages() {
-        // this.http.get<{ note: string, messages: Message[] }>('http://localhost:3000/api/messages')
-        //     .subscribe((msgData) => {
-        //         this.messages = msgData.messages;
-        //         this.messagesUpdated.next([...this.messages]);
-        //     });
-        const observable = new Observable(observer => {
-            this.socket = io(this.url);
-            this.socket.on('message', (data) => {
-                observer.next(data);
+        this.http.get<{ note: string, messages: Message[] }>('http://localhost:3000/api/messages')
+            .subscribe((msgData) => {
+                this.messages = msgData.messages;
+                this.messagesUpdated.next([...this.messages]);
             });
-            return () => {
-                this.socket.disconnect();
-            };
-        });
-        return observable;
+
+        // questa parte l'ho aggiunta io:
+        // const observable = new Observable(observer => {
+        //     this.socket = io(this.url);
+        //     this.socket.on('message', (data) => {
+        //         observer.next(data);
+        //     });
+        //     return () => {
+        //         this.socket.disconnect();
+        //     };
+        // });
+        // return observable;
     }
 
     getMessagesUpdatedListener() {
