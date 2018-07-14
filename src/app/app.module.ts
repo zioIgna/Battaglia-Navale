@@ -9,13 +9,17 @@ import { MessageCreateComponent } from './messages/message-create/message-create
 import { MatInputModule, MatCardModule, MatButtonModule, MatToolbarModule, MatExpansionModule } from '@angular/material';
 import { HeaderComponent } from './header/header.component';
 import { MsgListComponent } from './messages/msg-list/msg-list.component';
+import { UserCreateComponent } from './users/user-create/user-create.component';
+import { UsersListComponent } from './users/users-list/users-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MessageCreateComponent,
     HeaderComponent,
-    MsgListComponent
+    MsgListComponent,
+    UserCreateComponent,
+    UsersListComponent
   ],
   imports: [
     BrowserModule,
