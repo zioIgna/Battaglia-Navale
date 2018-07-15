@@ -71,8 +71,10 @@ server.listen(port
     , function () {
         console.log('listening on port ' + port);
 
-        io.on('connection', function (socket) {
-            console.log("USER CONNECTED...");
-        });
+
     }
 );
+
+io.on('connection', function (socket) {
+    console.log("USER CONNECTED...");
+});

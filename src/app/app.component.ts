@@ -10,9 +10,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     const socket = socketIo('http://localhost:3000');
-    socket.on('connection', () => {
-      console.log('user connected');
-    });
+    // socket.on('connection', () => {
+    //   console.log('user connected');
+    // });
   }
 
 
