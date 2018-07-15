@@ -50,31 +50,22 @@ const server = http.Server(app);    //ho cambiato il metodo da "createServer(app
 
 // costanti aggiunte per supporto a socket.io:
 const io = require("socket.io").listen(server);
-// var ios = undefined;
-
-// costanti aggiunte per supporto a socket.io:
-// ios = io(server);
-// io.on('connection', function (client) {
-//     console.log("Socket.io client connected");
-// });
-
-// io.sockets.on('connection', function (socket) {
-//     console.log("USER CONNECTED...");
-// });
-
-
 // fin qui
 
 server.on("error", onError);
 server.on("listening", onListening);
-server.listen(port
-    , function () {
-        console.log('listening on port ' + port);
-
-
-    }
+server.listen(port, function () {
+    console.log('listening on port ' + port);
+}
 );
 
 io.on('connection', function (socket) {
     console.log("USER CONNECTED...");
+    socket.on('disconnect', function () {
+        console.log('user disconnected');
+    });
+    socket.on('new user', function (obj) {
+        console.log(obj.message);
+        io.emit('new user', obj);
+    });
 });
