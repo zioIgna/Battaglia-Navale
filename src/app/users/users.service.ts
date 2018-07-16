@@ -34,17 +34,17 @@ export class UsersService implements OnInit {
         this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: user });  // linea aggiunta
     }
 
-    createUserNoPropagate(email: string, password: string) {
-        const user: User = {
-            id: null,
-            email: email,
-            password: password,
-            ruolo: 'basic'
-        };
-        this.users.push(user);
-        console.log(this.users);
-        this.usersUpdated.next([...this.users]);
-    }
+    // createUserNoPropagate(email: string, password: string) {
+    //     const user: User = {
+    //         id: null,
+    //         email: email,
+    //         password: password,
+    //         ruolo: 'basic'
+    //     };
+    //     this.users.push(user);
+    //     console.log(this.users);
+    //     this.usersUpdated.next([...this.users]);
+    // }
 
     ngOnInit() {
         this.connessione.getConnection();
