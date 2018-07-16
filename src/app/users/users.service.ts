@@ -8,8 +8,8 @@ import { Subject } from '../../../node_modules/rxjs';
 })
 export class UsersService implements OnInit {
 
-    private users: User[] = [];
-    private usersUpdated = new Subject<User[]>();
+    users: User[] = [];
+    usersUpdated = new Subject<User[]>();
 
     constructor(private connessione: ConnectionService) { }
 
@@ -28,9 +28,9 @@ export class UsersService implements OnInit {
             password: password,
             ruolo: 'basic'
         };
-        this.users.push(user);
+        // this.users.push(user);
         console.log(this.users);
-        this.usersUpdated.next([...this.users]);
+        // this.usersUpdated.next([...this.users]);
         this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: user });  // linea aggiunta
     }
 
