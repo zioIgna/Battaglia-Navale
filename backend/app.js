@@ -1,15 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const User = require('./models/user');
 
 const app = express();
 
-const users = [
-    { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
-    { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
-    { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
-];
+mongoose.connect('mongodb+srv://igna:PozKas6M2IC1JgR7@cluster0-3typv.mongodb.net/chat')
+    .then(() => {
+        console.log('Connected to database!');
+    })
+    .catch(() => {
+        console.log('Connection failed!');
+    });
+
+// const users = [
+//     { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
+//     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
+//     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
+// ];
 
 app.use(bodyParser.json());
 
@@ -47,10 +56,17 @@ app.get('/api/users', (req, res, next) => {
     //     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
     //     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
     // ];
-    res.status(200).json({
-        note: 'Users fetched successfully!',
-        users: users
+    User.find().then((docs)=>{
+        console.log(docs);
+        res.status(200).json({
+            note: 'Users fetched successfully!',
+            users: docs
+        });
     });
+    // res.status(200).json({
+    //     note: 'Users fetched successfully!',
+    //     users: users
+    // });
 });
 
 app.post('/api/users', (req, res, next) => {
@@ -58,12 +74,15 @@ app.post('/api/users', (req, res, next) => {
     const user = new User({
         email: req.body.email,
         password: req.body.password,
+        role: 'basic'
     });
-    users.push(user);
-    console.log(user);
-    res.status(201).json({
-        note: 'Risposta dal backend: User added!'
-    });
+    user.save().then(
+    // users.push(user);
+    // console.log(user);
+        res.status(201).json({
+            note: 'Risposta dal backend: User added!'
+        })
+    ).catch((err) => {console.log(err)});
 });
 
 module.exports = app;
