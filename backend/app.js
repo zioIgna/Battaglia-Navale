@@ -57,7 +57,7 @@ app.get('/api/users', (req, res, next) => {
     //     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
     // ];
     User.find().then((docs)=>{
-        console.log(docs);
+        // console.log(docs);
         res.status(200).json({
             note: 'Users fetched successfully!',
             users: docs
@@ -76,11 +76,12 @@ app.post('/api/users', (req, res, next) => {
         password: req.body.password,
         role: 'basic'
     });
-    user.save().then(
+    user.save().then((savedData) =>
     // users.push(user);
     // console.log(user);
         res.status(201).json({
-            note: 'Risposta dal backend: User added!'
+            note: 'Risposta dal backend: User added!',
+            datiSalvati: savedData
         })
     ).catch((err) => {console.log(err)});
 });

@@ -39,9 +39,10 @@ export class UsersService implements OnInit {
         // this.users.push(user);
         console.log(this.users);
         // this.usersUpdated.next([...this.users]);
-        this.http.post<{ note: string }>('http://localhost:3000/api/users', user)
+        this.http.post<{ note: string, datiSalvati: any }>('http://localhost:3000/api/users', user)
             .subscribe((responseData) => {
                 console.log(responseData.note);
+                console.log('questi sono i savedData: ', responseData.datiSalvati);
                 this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: user });  // linea aggiunta
             }, (err) => {
                 console.log(err);
