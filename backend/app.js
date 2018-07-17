@@ -32,4 +32,25 @@ app.use('/api/messages', (req, res, next) => {
     });
 });
 
+// metodi per gestione di utenti (aggiunti per progetto)
+app.get('/api/users', (req, res, next) => {
+    const users = [
+        { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
+        { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
+        { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
+    ];
+    res.status(200).json({
+        note: 'Users fetched successfully!',
+        users: users
+    });
+});
+
+app.post('/api/users', (req, res, next) => {
+    const user = req.body;
+    console.log(user);
+    res.status(201).json({
+        note: 'Risposta dal backend: User added!'
+    });
+});
+
 module.exports = app;

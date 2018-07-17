@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
     // });
     this.connessione.socket.on('new user', (obj) => {
       this.usersService.users.push(obj.payload);
-      // this.usersService.usersUpdated.next([...this.usersService.users]);
+      this.usersService.usersUpdated.next([...this.usersService.users]);
       // this.usersService.createUserNoPropagate(obj.payload.email, obj.payload.password);
       console.log(obj);
     });

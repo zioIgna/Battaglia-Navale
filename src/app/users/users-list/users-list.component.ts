@@ -1,5 +1,5 @@
-import { User } from './../user.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { User } from './../user.model';
 import { UsersService } from '../users.service';
 import { Subscription } from '../../../../node_modules/rxjs';
 
@@ -16,7 +16,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
     constructor(private usersService: UsersService) { }
 
     ngOnInit() {
-        this.users = this.usersService.getUsers();
+        this.usersService.getUsers();
         this.usersSub = this.usersService.getUsersUpdatedListener().subscribe(fetchedUsers => {
             this.users = fetchedUsers;
         });
