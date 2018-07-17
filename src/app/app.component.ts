@@ -20,12 +20,19 @@ export class AppComponent implements OnInit {
     // socket.on('connection', () => {
     //   console.log('user connected');
     // });
+
+    // prova: commento questa funzione per provare una alternativa all'evento "new user"
+    // this.connessione.socket.on('new user', (obj) => {
+    //   this.usersService.users.push(obj.payload);
+    //   this.usersService.usersUpdated.next([...this.usersService.users]);
+    //   // this.usersService.createUserNoPropagate(obj.payload.email, obj.payload.password);  // questa linea non serve
+    //   console.log(obj);
+    // });
+
     this.connessione.socket.on('new user', (obj) => {
-      this.usersService.users.push(obj.payload);
-      this.usersService.usersUpdated.next([...this.usersService.users]);
-      // this.usersService.createUserNoPropagate(obj.payload.email, obj.payload.password);
-      console.log(obj);
+      this.usersService.getUsers();
     });
+
   }
 
 

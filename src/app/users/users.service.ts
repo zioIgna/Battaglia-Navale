@@ -9,8 +9,8 @@ import { HttpClient } from '../../../node_modules/@angular/common/http';
 })
 export class UsersService implements OnInit {
 
-    users: User[] = [];
-    usersUpdated = new Subject<User[]>();
+    private users: User[] = [];
+    private usersUpdated = new Subject<User[]>();
 
     constructor(private connessione: ConnectionService, private http: HttpClient) { }
 
@@ -19,6 +19,7 @@ export class UsersService implements OnInit {
         this.http.get<{ note: string, users: User[] }>('http://localhost:3000/api/users')
             .subscribe((usersData) => {
                 console.log(usersData.note);
+                console.log('questi sono i nuovi users', usersData.users);
                 this.users = usersData.users;
                 this.usersUpdated.next([...this.users]);
             });

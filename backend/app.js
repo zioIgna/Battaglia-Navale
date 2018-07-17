@@ -1,7 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const User = require('./models/user');
+
 const app = express();
+
+const users = [
+    { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
+    { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
+    { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
+];
 
 app.use(bodyParser.json());
 
@@ -34,11 +42,11 @@ app.use('/api/messages', (req, res, next) => {
 
 // metodi per gestione di utenti (aggiunti per progetto)
 app.get('/api/users', (req, res, next) => {
-    const users = [
-        { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
-        { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
-        { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
-    ];
+    // const users = [
+    //     { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
+    //     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
+    //     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
+    // ];
     res.status(200).json({
         note: 'Users fetched successfully!',
         users: users
@@ -46,7 +54,12 @@ app.get('/api/users', (req, res, next) => {
 });
 
 app.post('/api/users', (req, res, next) => {
-    const user = req.body;
+    // const user = req.body;
+    const user = new User({
+        email: req.body.email,
+        password: req.body.password,
+    });
+    users.push(user);
     console.log(user);
     res.status(201).json({
         note: 'Risposta dal backend: User added!'
