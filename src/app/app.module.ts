@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { MessageCreateComponent } from './messages/message-create/message-create.component';
@@ -12,6 +12,7 @@ import { MsgListComponent } from './messages/msg-list/msg-list.component';
 import { UserCreateComponent } from './users/user-create/user-create.component';
 import { UsersListComponent } from './users/users-list/users-list.component';
 import { UserLoginComponent } from './users/user-login/user-login.component';
+import { AuthInterceptor } from './users/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,7 @@ import { UserLoginComponent } from './users/user-login/user-login.component';
     MatExpansionModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

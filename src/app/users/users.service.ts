@@ -12,8 +12,13 @@ export class UsersService implements OnInit {
 
     private users: User[] = [];
     private usersUpdated = new Subject<User[]>();
+    private token: string;
 
     constructor(private connessione: ConnectionService, private http: HttpClient) { }
+
+    getToken() {
+        return this.token;
+    }
 
     getUsers() {
         // return this.users;
@@ -55,9 +60,11 @@ export class UsersService implements OnInit {
             email: email,
             password: password
         };
-        this.http.post('http://localhost:3000/api/users/login', authData)
+        this.http.post<{ token: string }>('http://localhost:3000/api/users/login', authData)
             .subscribe(response => {
-                console.log(response);
+                // console.log(response);
+                const token = response.token;
+                this.token = token;
             });
     }
 

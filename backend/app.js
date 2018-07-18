@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('./models/user');
+const checkAuth = require('./middleware/check-auth');
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
     next();
 })
@@ -52,7 +53,7 @@ app.use('/api/messages', (req, res, next) => {
 });
 
 // metodi per gestione di utenti (aggiunti per progetto)
-app.get('/api/users', (req, res, next) => {
+app.get('/api/users', checkAuth, (req, res, next) => {
     // const users = [
     //     { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
     //     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
