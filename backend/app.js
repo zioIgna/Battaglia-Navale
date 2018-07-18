@@ -98,13 +98,15 @@ app.post('/api/users/signup', (req, res, next) => {
 });
 
 app.post('/api/users/login', (req, res, next) => {
+    let fetchedUser;
     User.findOne({ email: req.body.email }).then(user => {
         if (!user) {
             return res.status(401).json({
                 message: 'Authentication failed!'
             });
         }
-        bcrypt.compare(req.body.password, user.password);
+        fetchedUser = user;
+        return bcrypt.compare(req.body.password, user.password);
     })
         .then(result => {
             if (!result) {
@@ -113,7 +115,7 @@ app.post('/api/users/login', (req, res, next) => {
                 });
             }
             const token = jwt.sign(
-                { email: user.email, userId: user._id, role: user.role },
+                { email: fetchedUser.email, userId: fetchedUser._id, role: fetchedUser.role },
                 'password_segreta_per_la_cifratura',
                 { expiresIn: '1h' }
             );
