@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('./models/user');
 
@@ -56,7 +58,7 @@ app.get('/api/users', (req, res, next) => {
     //     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
     //     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
     // ];
-    User.find().then((docs)=>{
+    User.find().then((docs) => {
         // console.log(docs);
         res.status(200).json({
             note: 'Users fetched successfully!',
@@ -69,21 +71,61 @@ app.get('/api/users', (req, res, next) => {
     // });
 });
 
-app.post('/api/users', (req, res, next) => {
+app.post('/api/users/signup', (req, res, next) => {
     // const user = req.body;
-    const user = new User({
-        email: req.body.email,
-        password: req.body.password,
-        role: 'basic'
-    });
-    user.save().then((savedData) =>
-    // users.push(user);
-    // console.log(user);
-        res.status(201).json({
-            note: 'Risposta dal backend: User added!',
-            datiSalvati: savedData
+    bcrypt.hash(req.body.password, 10)
+        .then(hash => {
+            const user = new User({
+                email: req.body.email,
+                password: hash,
+                role: 'basic',
+                score: 0
+            });
+            user.save()
+                .then((savedData) =>
+                    // users.push(user);
+                    // console.log(user);
+                    res.status(201).json({
+                        note: 'Risposta dal backend: User added!',
+                        datiSalvati: savedData
+                    })
+                ).catch((err) => {
+                    res.status(500).json({
+                        error: err
+                    });
+                });
+        });
+});
+
+app.post('/api/users/login', (req, res, next) => {
+    User.findOne({ email: req.body.email }).then(user => {
+        if (!user) {
+            return res.status(401).json({
+                message: 'Authentication failed!'
+            });
+        }
+        bcrypt.compare(req.body.password, user.password);
+    })
+        .then(result => {
+            if (!result) {
+                return res.status(401).json({
+                    message: 'Authentication failed!'
+                });
+            }
+            const token = jwt.sign(
+                { email: user.email, userId: user._id, role: user.role },
+                'password_segreta_per_la_cifratura',
+                { expiresIn: '1h' }
+            );
+            res.status(200).json({
+                token: token
+            });
         })
-    ).catch((err) => {console.log(err)});
+        .catch(err => {
+            return res.status(401).json({
+                message: 'Authentication failed!'
+            });
+        });
 });
 
 module.exports = app;

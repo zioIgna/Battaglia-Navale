@@ -1,8 +1,9 @@
-import { ConnectionService } from './../connection.service';
+import { ConnectionService } from '../connection.service';
 import { User } from './user.model';
 import { Injectable, OnInit } from '@angular/core';
-import { Subject } from '../../../node_modules/rxjs';
-import { HttpClient } from '../../../node_modules/@angular/common/http';
+import { Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { AuthData } from './auth-data.model';
 
 @Injectable({
     providedIn: 'root'
@@ -30,22 +31,33 @@ export class UsersService implements OnInit {
     }
 
     createUser(email: string, password: string) {
-        const user: User = {
-            id: null,
+        const authData: AuthData = {
+            // id: null,
             email: email,
             password: password,
-            ruolo: 'basic'
+            // ruolo: 'basic'
         };
-        // this.users.push(user);
+        // this.users.push(authData);
         console.log(this.users);
         // this.usersUpdated.next([...this.users]);
-        this.http.post<{ note: string, datiSalvati: any }>('http://localhost:3000/api/users', user)
+        this.http.post<{ note: string, datiSalvati: any }>('http://localhost:3000/api/users/signup', authData)
             .subscribe((responseData) => {
                 console.log(responseData.note);
                 console.log('questi sono i savedData: ', responseData.datiSalvati);
-                this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: user });  // linea aggiunta
+                this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: authData });  // linea aggiunta
             }, (err) => {
                 console.log(err);
+            });
+    }
+
+    login(email: string, password: string) {
+        const authData: AuthData = {
+            email: email,
+            password: password
+        };
+        this.http.post('http://localhost:3000/api/users/login', authData)
+            .subscribe(response => {
+                console.log(response);
             });
     }
 

@@ -1,7 +1,7 @@
 import { Message } from './message.model';
-import { Injectable } from '../../../node_modules/@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { HttpClient } from '../../../node_modules/@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 // import * as io from 'socket.io-client';
 
 @Injectable({ providedIn: 'root' })

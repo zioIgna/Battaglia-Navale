@@ -3,22 +3,22 @@ import { NgForm } from '@angular/forms';
 import { UsersService } from '../users.service';
 
 @Component({
-  selector: 'app-user-create',
-  templateUrl: './user-create.component.html',
-  styleUrls: ['./user-create.component.css']
+  selector: 'app-user-login',
+  templateUrl: './user-login.component.html',
+  styleUrls: ['./user-login.component.css']
 })
-export class UserCreateComponent implements OnInit {
+export class UserLoginComponent implements OnInit {
 
   email = '';
   password = '';
 
   constructor(private usersService: UsersService) { }
 
-  onSignUp(form: NgForm) {
+  onLogin(form: NgForm) {
     if (form.invalid) {
       return;
     }
-    this.usersService.createUser(form.value.email, form.value.password);
+    this.usersService.login(form.value.email, form.value.password);
     form.resetForm();
   }
 
