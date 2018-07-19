@@ -86,10 +86,22 @@ app.post('/api/users/signup', (req, res, next) => {
                 .then((savedData) =>
                     // users.push(user);
                     // console.log(user);
-                    res.status(201).json({
-                        note: 'Risposta dal backend: User added!',
-                        datiSalvati: savedData
-                    })
+
+                    {
+                        const token = jwt.sign(
+                            { email: savedData.email, userId: savedData._id, role: savedData.role },
+                            'password_segreta_per_la_cifratura',
+                            { expiresIn: '1h' }
+                        );
+
+                        res.status(201).json({
+                            note: 'Risposta dal backend: User added!',
+                            datiSalvati: savedData,
+                            token: token
+                        });
+
+
+                    }
                 ).catch((err) => {
                     res.status(500).json({
                         error: err

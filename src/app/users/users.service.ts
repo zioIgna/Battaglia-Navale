@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { ConnectionService } from '../connection.service';
 import { User } from './user.model';
 import { Injectable, OnInit } from '@angular/core';
@@ -14,7 +15,7 @@ export class UsersService implements OnInit {
     private usersUpdated = new Subject<User[]>();
     private token: string;
 
-    constructor(private connessione: ConnectionService, private http: HttpClient) { }
+    constructor(private connessione: ConnectionService, private http: HttpClient, private router: Router) { }
 
     getToken() {
         return this.token;
@@ -45,11 +46,12 @@ export class UsersService implements OnInit {
         // this.users.push(authData);
         console.log(this.users);
         // this.usersUpdated.next([...this.users]);
-        this.http.post<{ note: string, datiSalvati: any }>('http://localhost:3000/api/users/signup', authData)
+        this.http.post<{ note: string, datiSalvati: any, token: string }>('http://localhost:3000/api/users/signup', authData)
             .subscribe((responseData) => {
                 console.log(responseData.note);
                 console.log('questi sono i savedData: ', responseData.datiSalvati);
                 this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: authData });  // linea aggiunta
+                this.router.navigate(['/overview']);
             }, (err) => {
                 console.log(err);
             });
@@ -65,6 +67,7 @@ export class UsersService implements OnInit {
                 console.log(response);
                 const token = response.token;
                 this.token = token;
+                this.router.navigate(['/overview']);
             });
     }
 
