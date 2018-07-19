@@ -51,6 +51,8 @@ export class UsersService implements OnInit {
                 console.log(responseData.note);
                 console.log('questi sono i savedData: ', responseData.datiSalvati);
                 this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: authData });  // linea aggiunta
+                const token = responseData.token;
+                this.token = token;
                 this.router.navigate(['/overview']);
             }, (err) => {
                 console.log(err);
