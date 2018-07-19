@@ -107,9 +107,12 @@ app.post('/api/users/login', (req, res, next) => {
             });
         }
         fetchedUser = user;
+        // console.log('questo è il fetchedUser: ', fetchedUser);
+        // console.log(bcrypt.compare(req.body.password, user.password));
         return bcrypt.compare(req.body.password, user.password);
     })
         .then(result => {
+            console.log('risultato bcrypt da login: ', result);
             if (!result) {
                 return res.status(401).json({
                     message: 'Authentication failed!'

@@ -13,6 +13,8 @@ import { UserCreateComponent } from './users/user-create/user-create.component';
 import { UsersListComponent } from './users/users-list/users-list.component';
 import { UserLoginComponent } from './users/user-login/user-login.component';
 import { AuthInterceptor } from './users/auth-interceptor';
+import { OverviewComponent } from './overview/overview.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -22,10 +24,12 @@ import { AuthInterceptor } from './users/auth-interceptor';
     MsgListComponent,
     UserCreateComponent,
     UserLoginComponent,
-    UsersListComponent
+    UsersListComponent,
+    OverviewComponent
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
     MatInputModule,

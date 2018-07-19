@@ -62,7 +62,7 @@ export class UsersService implements OnInit {
         };
         this.http.post<{ token: string }>('http://localhost:3000/api/users/login', authData)
             .subscribe(response => {
-                // console.log(response);
+                console.log(response);
                 const token = response.token;
                 this.token = token;
             });
