@@ -137,7 +137,9 @@ app.post('/api/users/login', (req, res, next) => {
             );
             res.status(200).json({
                 token: token,
-                userRole: fetchedUser.role
+                userRole: fetchedUser.role,
+                userId: fetchedUser._id,
+                email: fetchedUser.email
             });
         })
         .catch(err => {

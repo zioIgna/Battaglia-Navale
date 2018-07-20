@@ -16,6 +16,11 @@ export class UsersService implements OnInit {
     private token: string;
     private authStatusListener = new Subject<boolean>();
     private isAdmin = false;
+    private adminStatusListener = new Subject<boolean>();
+    private loggedUserId: string;
+    private loggedUserIdListener = new Subject<string>();
+    private loggedEmail: string;
+    private loggedEmailListener = new Subject<string>();
 
     constructor(private connessione: ConnectionService, private http: HttpClient, private router: Router) { }
 
@@ -25,6 +30,30 @@ export class UsersService implements OnInit {
 
     getAuthStatusListener() {
         return this.authStatusListener.asObservable();
+    }
+
+    getIsAdmin() {
+        return this.isAdmin;
+    }
+
+    getAdminStatusListener() {
+        return this.adminStatusListener.asObservable();
+    }
+
+    getLoggedId() {
+        return this.loggedUserId;
+    }
+
+    getLoggedUserIdListener() {
+        return this.loggedUserIdListener.asObservable();
+    }
+
+    getLoggedEmail() {
+        return this.loggedEmail;
+    }
+
+    getLoggedEmailListener() {
+        return this.loggedEmailListener.asObservable();
     }
 
     getUsers() {
@@ -70,15 +99,27 @@ export class UsersService implements OnInit {
             email: email,
             password: password
         };
-        this.http.post<{ token: string, userRole: string }>('http://localhost:3000/api/users/login', authData)
+        this.http.post<{
+            token: string, userRole: string, userId: string, email: string
+        }>('http://localhost:3000/api/users/login', authData)
             .subscribe(response => {
                 console.log('questa è la risposta al login: ', response);
                 const token = response.token;
                 this.token = token;
-                this.isAdmin = (response.userRole === 'admin');
-                console.log('è amministratore? ', this.isAdmin);
-                this.authStatusListener.next(true);
-                this.router.navigate(['/overview']);
+                if (token) {
+                    // si passa l'info se il soggetto loggato è amministratore o no
+                    this.isAdmin = (response.userRole === 'admin');
+                    this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
+                    console.log('è amministratore? ', response.userRole === 'admin');
+                    this.loggedUserId = response.userId;
+                    this.loggedUserIdListener.next(this.loggedUserId);
+                    console.log('questo è lo id loggato', this.loggedUserId);
+                    this.loggedEmail = response.email;
+                    this.loggedEmailListener.next(this.loggedEmail);
+                    //
+                    this.authStatusListener.next(true);
+                    this.router.navigate(['/overview']);
+                }
             });
     }
 
