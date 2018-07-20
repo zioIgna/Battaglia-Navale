@@ -14,11 +14,17 @@ export class UsersService implements OnInit {
     private users: User[] = [];
     private usersUpdated = new Subject<User[]>();
     private token: string;
+    private authStatusListener = new Subject<boolean>();
+    private isAdmin = false;
 
     constructor(private connessione: ConnectionService, private http: HttpClient, private router: Router) { }
 
     getToken() {
         return this.token;
+    }
+
+    getAuthStatusListener() {
+        return this.authStatusListener.asObservable();
     }
 
     getUsers() {
@@ -64,11 +70,14 @@ export class UsersService implements OnInit {
             email: email,
             password: password
         };
-        this.http.post<{ token: string }>('http://localhost:3000/api/users/login', authData)
+        this.http.post<{ token: string, userRole: string }>('http://localhost:3000/api/users/login', authData)
             .subscribe(response => {
-                console.log(response);
+                console.log('questa è la risposta al login: ', response);
                 const token = response.token;
                 this.token = token;
+                this.isAdmin = (response.userRole === 'admin');
+                console.log('è amministratore? ', this.isAdmin);
+                this.authStatusListener.next(true);
                 this.router.navigate(['/overview']);
             });
     }
