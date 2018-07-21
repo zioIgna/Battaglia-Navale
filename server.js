@@ -68,4 +68,8 @@ io.on('connection', function (socket) {
         console.log(obj.message);
         io.emit('new user', obj);
     });
+    socket.on('deleted user', function (obj){
+        console.log(obj.message);
+        io.emit('deleted user');
+    })
 });

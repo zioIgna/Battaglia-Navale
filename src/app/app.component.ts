@@ -33,6 +33,10 @@ export class AppComponent implements OnInit {
       this.usersService.getUsers();
     });
 
+    this.connessione.socket.on('deleted user', () => {
+      this.usersService.getUsers();
+    });
+
   }
 
 

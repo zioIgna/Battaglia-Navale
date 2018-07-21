@@ -9,6 +9,7 @@ import { Subscription } from '../../../node_modules/rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
+  // questi 2 metodi servono solo all'header per sapere quali pulsanti mostrare
   userIsAuthenticated = false;
   private authListenerSubs: Subscription;
 
@@ -18,6 +19,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authListenerSubs = this.usersService.getAuthStatusListener().subscribe((isAuthenticated) => {
       this.userIsAuthenticated = isAuthenticated;
     });
+  }
+
+  onLogout() {
+    this.usersService.logout();
   }
 
   ngOnDestroy() {

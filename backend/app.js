@@ -84,24 +84,24 @@ app.post('/api/users/signup', (req, res, next) => {
             });
             user.save()
                 .then((savedData) =>
-                    // users.push(user);
-                    // console.log(user);
+                // users.push(user);
+                // console.log(user);
 
-                    {
-                        const token = jwt.sign(
-                            { email: savedData.email, userId: savedData._id, role: savedData.role },
-                            'password_segreta_per_la_cifratura',
-                            { expiresIn: '1h' }
-                        );
+                {
+                    const token = jwt.sign(
+                        { email: savedData.email, userId: savedData._id, role: savedData.role },
+                        'password_segreta_per_la_cifratura',
+                        { expiresIn: '1h' }
+                    );
 
-                        res.status(201).json({
-                            note: 'Risposta dal backend: User added!',
-                            datiSalvati: savedData,
-                            token: token
-                        });
+                    res.status(201).json({
+                        note: 'Risposta dal backend: User added!',
+                        datiSalvati: savedData,
+                        token: token
+                    });
 
 
-                    }
+                }
                 ).catch((err) => {
                     res.status(500).json({
                         error: err
@@ -137,6 +137,7 @@ app.post('/api/users/login', (req, res, next) => {
             );
             res.status(200).json({
                 token: token,
+                expiresIn: 3600,
                 userRole: fetchedUser.role,
                 userId: fetchedUser._id,
                 email: fetchedUser.email
@@ -148,5 +149,13 @@ app.post('/api/users/login', (req, res, next) => {
             });
         });
 });
+
+app.delete('/api/users/delete/:id', (req, res, next) => {
+    User.deleteOne({ _id: req.params.id }).then(result => {
+        console.log(result);
+        res.status(200).json({ message: 'User deleted!' });
+    })
+});
+
 
 module.exports = app;

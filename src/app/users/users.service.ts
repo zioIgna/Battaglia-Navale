@@ -21,6 +21,7 @@ export class UsersService implements OnInit {
     private loggedUserIdListener = new Subject<string>();
     private loggedEmail: string;
     private loggedEmailListener = new Subject<string>();
+    private tokenTimer: any;
 
     constructor(private connessione: ConnectionService, private http: HttpClient, private router: Router) { }
 
@@ -86,9 +87,11 @@ export class UsersService implements OnInit {
                 console.log(responseData.note);
                 console.log('questi sono i savedData: ', responseData.datiSalvati);
                 this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: authData });  // linea aggiunta
-                const token = responseData.token;
-                this.token = token;
-                this.router.navigate(['/overview']);
+                // soluzione alternativa per il login, commentare le pross 2 righe e quella dopo:
+                // const token = responseData.token;
+                // this.token = token;
+                this.login(email, password);
+                // this.router.navigate(['/overview']);
             }, (err) => {
                 console.log(err);
             });
@@ -100,13 +103,17 @@ export class UsersService implements OnInit {
             password: password
         };
         this.http.post<{
-            token: string, userRole: string, userId: string, email: string
+            token: string, expiresIn: number, userRole: string, userId: string, email: string
         }>('http://localhost:3000/api/users/login', authData)
             .subscribe(response => {
                 console.log('questa è la risposta al login: ', response);
                 const token = response.token;
                 this.token = token;
                 if (token) {
+                    const expiresInDuration = response.expiresIn;
+                    this.tokenTimer = setTimeout(() => {
+                        this.logout();
+                    }, expiresInDuration * 1000);
                     // si passa l'info se il soggetto loggato è amministratore o no
                     this.isAdmin = (response.userRole === 'admin');
                     this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
@@ -117,10 +124,33 @@ export class UsersService implements OnInit {
                     this.loggedEmail = response.email;
                     this.loggedEmailListener.next(this.loggedEmail);
                     //
-                    this.authStatusListener.next(true);
+                    this.authStatusListener.next(true);  // questo comando serve solo all'header
                     this.router.navigate(['/overview']);
                 }
             });
+    }
+
+    logout() {
+        // authStatusListener serve solo all'header per sapere che bottoni mostrare
+        this.token = null;
+        this.isAdmin = false;
+        this.loggedUserId = null;
+        this.loggedEmail = null;
+        this.authStatusListener.next(false);
+        clearTimeout(this.tokenTimer);
+        this.router.navigate(['/']);
+    }
+
+    deleteUser(userId: string) {
+        this.http.delete('http://localhost:3000/api/users/delete/' + userId).subscribe((response) => {
+            console.log('Msg frontend: user deleted, backend: ', response);
+            this.connessione.socket.emit('deleted user', { message: 'utente eliminato' });
+            if (this.loggedUserId === userId) {
+                this.logout();
+            }
+        }, (err) => {
+            console.log('Error: user not deleted ', err);
+        });
     }
 
     // createUserNoPropagate(email: string, password: string) {
