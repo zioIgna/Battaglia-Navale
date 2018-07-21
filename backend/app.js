@@ -59,7 +59,7 @@ app.get('/api/users', checkAuth, (req, res, next) => {
     //     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
     //     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
     // ];
-    User.find().then((docs) => {
+    User.find({}, null, { sort: { score: -1 } }).then((docs) => {
         // console.log(docs);
         res.status(200).json({
             note: 'Users fetched successfully!',
