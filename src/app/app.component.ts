@@ -37,6 +37,10 @@ export class AppComponent implements OnInit {
       this.usersService.getUsers();
     });
 
+    this.connessione.socket.on('user updated', () => {
+      this.usersService.getUsers();
+    });
+
   }
 
 

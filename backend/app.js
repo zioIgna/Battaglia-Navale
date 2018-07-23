@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     next();
 })
 
@@ -149,6 +149,56 @@ app.post('/api/users/login', (req, res, next) => {
             });
         });
 });
+
+app.put('/api/users/switch/:id', (req, res, next) => {
+    console.log('sono arrivato all\'indirizzo dello switch');
+    // User.findOne({ _id: req.params.id }).then(result => {
+    // if (user) {
+    //     console.log('user recuperato con edit: ', user);
+
+    // }
+    // else {
+    //     res.json({ message: 'User non trovato con edit' });
+    // }
+    // })
+    // console.log(result);
+    // res.status(200).json({ message: 'Recuperato user con edit' });
+    User.updateOne({ _id: req.params.id, role: { $eq: 'basic' } }, { $set: { role: 'admin' } }, (err, raw) => {
+        if (err) {
+            res.status(400).json({ message: 'User update failed', errore: err });
+        }
+        else {
+            // console.log('User update successfull');
+            // res.status(200).json({ esito: raw.n });
+            if (raw.n === 0) {
+                User.updateOne({ _id: req.params.id, role: { $eq: 'admin' } }, { $set: { role: 'basic' } }, (err, raw) => {
+                    if (err) {
+                        return res.status(400).json({ message: 'Secondo tentativo di update fallito', errore: err });
+                    }
+                    console.log('Update riuscito al secondo tentativo');
+                    return res.status(200).json({ message: 'Msg from backend: Update successful', raw });
+                })
+            }
+            console.log('Update riuscito al primo tentativo');
+            return res.status(200).json({ message: 'Msg from backend: Update successful', raw });
+        }
+    })
+        .catch(err => {
+            console.log(err);
+            return res.status(400).json({ message: 'problemi con funzione edit' });
+        })
+    // Comandi di prova:
+    // User.updateOne({ _id: req.params.id }, (err, doc) => {
+    //     if (err) {
+    //         console.log('switch operation not performed', err);
+    //         res.status(400).json({ message: 'Msg from server: role not switched' });
+    //     }
+    //     else {
+    //         console.log('switch successful', doc);
+    //         res.status(200).json({ message: 'Msg from server: role switched' });
+    //     }
+    // })
+})
 
 app.delete('/api/users/delete/:id', (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(result => {

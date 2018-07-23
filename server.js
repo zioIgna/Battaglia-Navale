@@ -71,5 +71,9 @@ io.on('connection', function (socket) {
     socket.on('deleted user', function (obj){
         console.log(obj.message);
         io.emit('deleted user');
+    });
+    socket.on('user updated', function (obj){
+        console.log(obj.message);
+        io.emit('user updated');
     })
 });
