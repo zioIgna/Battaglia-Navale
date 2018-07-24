@@ -46,8 +46,9 @@ export class UsersListComponent implements OnInit, OnDestroy {
         this.usersService.deleteUser(userId);
     }
 
-    onSwitch(userId) {
-        this.usersService.switchRole(userId);
+    onSwitch(userId, role) {
+        role === 'admin' ? role = 'basic' : role = 'admin';
+        this.usersService.switchRole(userId, role);
     }
 
     ngOnDestroy() {

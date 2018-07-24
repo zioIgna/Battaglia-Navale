@@ -74,6 +74,7 @@ app.get('/api/users', checkAuth, (req, res, next) => {
 
 app.post('/api/users/signup', (req, res, next) => {
     // const user = req.body;
+    console.log('req.body del signup: ', req.body);
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
@@ -152,51 +153,46 @@ app.post('/api/users/login', (req, res, next) => {
 
 app.put('/api/users/switch/:id', (req, res, next) => {
     console.log('sono arrivato all\'indirizzo dello switch');
-    // User.findOne({ _id: req.params.id }).then(result => {
-    // if (user) {
-    //     console.log('user recuperato con edit: ', user);
+    console.log('questo è il req.body: ',req.body);
+    const newRole = req.body.role;
+    console.log('questo è il ruolo che si imposta: ', newRole);
 
-    // }
-    // else {
-    //     res.json({ message: 'User non trovato con edit' });
-    // }
-    // })
-    // console.log(result);
-    // res.status(200).json({ message: 'Recuperato user con edit' });
-    User.updateOne({ _id: req.params.id, role: { $eq: 'basic' } }, { $set: { role: 'admin' } }, (err, raw) => {
+    User.updateOne({ _id: req.params.id }, { $set: { role: newRole } }, (err, raw) => {
         if (err) {
-            res.status(400).json({ message: 'User update failed', errore: err });
+            return res.status(400).json({ message: 'User update failed', esito: err });
         }
-        else {
-            // console.log('User update successfull');
-            // res.status(200).json({ esito: raw.n });
-            if (raw.n === 0) {
-                User.updateOne({ _id: req.params.id, role: { $eq: 'admin' } }, { $set: { role: 'basic' } }, (err, raw) => {
-                    if (err) {
-                        return res.status(400).json({ message: 'Secondo tentativo di update fallito', errore: err });
-                    }
-                    console.log('Update riuscito al secondo tentativo');
-                    return res.status(200).json({ message: 'Msg from backend: Update successful', raw });
-                })
-            }
-            console.log('Update riuscito al primo tentativo');
-            return res.status(200).json({ message: 'Msg from backend: Update successful', raw });
-        }
-    })
-        .catch(err => {
-            console.log(err);
-            return res.status(400).json({ message: 'problemi con funzione edit' });
-        })
-    // Comandi di prova:
-    // User.updateOne({ _id: req.params.id }, (err, doc) => {
+        console.log('Msg da backend: Update riuscito');
+        return res.status(200).json({ message: 'Update successful', esito: raw });
+    }).then(result =>{
+        console.log('risultato dello update: ', result);
+    }).catch(err =>{
+        console.log('problemi nello update user: ', err);
+    });
+
+    // User.updateOne({ _id: req.params.id, role: { $eq: 'basic' } }, { $set: { role: 'admin' } }, (err, raw) => {
     //     if (err) {
-    //         console.log('switch operation not performed', err);
-    //         res.status(400).json({ message: 'Msg from server: role not switched' });
+    //         res.status(400).json({ message: 'User update failed', errore: err });
     //     }
     //     else {
-    //         console.log('switch successful', doc);
-    //         res.status(200).json({ message: 'Msg from server: role switched' });
+    //         if (raw.n === 0) {
+    //             console.log('questo è il raw: ', raw);
+    //             User.updateOne({ _id: req.params.id, role: { $eq: 'admin' } }, { $set: { role: 'basic' } }, (err, raw) => {
+    //                 if (err) {
+    //                     return res.status(400).json({ message: 'Secondo tentativo di update fallito', errore: err });
+    //                 }
+    //                 console.log('Update riuscito al secondo tentativo');
+    //                 return res.status(200).json({ message: 'Msg from backend: Update successful', raw });
+    //             })
+    //         }
+    //         console.log('Update riuscito al primo tentativo');
+    //         return res.status(200).json({ message: 'Msg from backend: Update successful', raw });
     //     }
+    // })
+
+
+    // .catch(err => {
+    //     console.log(err);
+    //     return res.status(400).json({ message: 'problemi con funzione edit' });
     // })
 })
 

@@ -153,13 +153,24 @@ export class UsersService implements OnInit {
         });
     }
 
-    switchRole(userId: string) {
-        this.http.put<{ msg: string }>('http://localhost:3000/api/users/switch/' + userId, null).subscribe((response) => {
+    switchRole(userId: string, role: string) {
+        console.log('questo è il role passato: ', role);
+        const newSetting = {
+            role: role
+        };
+        this.http.put<{
+            msg: string,
+            outcome: object
+        }>('http://localhost:3000/api/users/switch/' + userId, newSetting)
+        .subscribe(
+            (response) => {
             console.log('Msg frontend: user\'s role switched', response);
             this.connessione.socket.emit('user updated', { message: 'user\'s role switched' });
-        }, (err) => {
-            console.log('Error: user\'s role not switched', err);
-        });
+            },
+            (err) => {
+                console.log('Error: user\'s role not switched', err);
+            }
+        );
     }
 
     // createUserNoPropagate(email: string, password: string) {
