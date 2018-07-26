@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('./models/user');
+const Message = require('./models/message');
 const checkAuth = require('./middleware/check-auth');
 
 const app = express();
@@ -33,23 +34,46 @@ app.use((req, res, next) => {
 })
 
 app.post('/api/messages', (req, res, next) => {
-    const message = req.body;
-    console.log(message);
-    res.status(201).json({
-        note: 'Messaggio aggiunto con successo'
+    const richiesta = req.body;
+    console.log(richiesta);
+    const message = new Message({
+        autore: req.body.autore,
+        contenuto: req.body.contenuto,
+        destinatario: req.body.destinatario,
+        timestamp: req.body.timestamp
     });
+    message.save()
+        .then((savedData) => {
+            res.status(200).json({ note: 'Messaggio salvato con successo', msg: savedData });
+        })
+        .catch((err) => {
+            res.status(400).json({ note: 'Errore nel salvataggio del messaggio', msg: err });
+        });
+    // res.status(201).json({
+    //     note: 'Messaggio aggiunto con successo'
+    // });
 });
 
-app.use('/api/messages', (req, res, next) => {
-    const messages = [
-        { id: 'pqwe0rjfa3', autore: 'autore 1', contenuto: 'primo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:34:44.117Z' },
-        { id: 'weorrs3gu', autore: 'autore 2', contenuto: 'secondo messaggio', destinatario: 'autore 1', timestamp: '2018-07-08T20:35:26.866Z' },
-        { id: 'aèdfq0392', autore: 'autore 3', contenuto: 'terzo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:35:54.601Z' }
-    ];
-    res.status(200).json({
-        note: 'Messages fetched successfully!',
-        messages: messages
-    });
+app.get('/api/messages/:email', (req, res, next) => {
+    // const messages = [
+    //     { id: 'pqwe0rjfa3', autore: 'autore 1', contenuto: 'primo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:34:44.117Z' },
+    //     { id: 'weorrs3gu', autore: 'autore 2', contenuto: 'secondo messaggio', destinatario: 'autore 1', timestamp: '2018-07-08T20:35:26.866Z' },
+    //     { id: 'aèdfq0392', autore: 'autore 3', contenuto: 'terzo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:35:54.601Z' }
+    // ];
+    console.log('questi sono i parametri email del get messages: ', req.params);
+    // { $or: [{ autore: { $eq: req.params.email } }, { destinatario: { $eq: req.params.email } }] }
+    Message.find({ $or: [{ autore: { $eq: req.params.email } }, { destinatario: { $eq: req.params.email } }] }, null, { sort: { timeStamp: -1 } })
+        .then(response => {
+            res.status(200).json({
+                note: 'Messages fetched successfully!',
+                messages: response
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                note: 'Error fetching messages ' + err
+            });
+        });
 });
 
 // metodi per gestione di utenti (aggiunti per progetto)
@@ -153,7 +177,7 @@ app.post('/api/users/login', (req, res, next) => {
 
 app.put('/api/users/switch/:id', (req, res, next) => {
     console.log('sono arrivato all\'indirizzo dello switch');
-    console.log('questo è il req.body: ',req.body);
+    console.log('questo è il req.body: ', req.body);
     const newRole = req.body.role;
     console.log('questo è il ruolo che si imposta: ', newRole);
 
@@ -163,9 +187,9 @@ app.put('/api/users/switch/:id', (req, res, next) => {
         }
         console.log('Msg da backend: Update riuscito');
         return res.status(200).json({ message: 'Update successful', esito: raw });
-    }).then(result =>{
+    }).then(result => {
         console.log('risultato dello update: ', result);
-    }).catch(err =>{
+    }).catch(err => {
         console.log('problemi nello update user: ', err);
     });
 

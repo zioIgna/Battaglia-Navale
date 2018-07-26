@@ -6,7 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { MessageCreateComponent } from './messages/message-create/message-create.component';
-import { MatInputModule, MatCardModule, MatButtonModule, MatToolbarModule, MatExpansionModule } from '@angular/material';
+import { MatInputModule, MatCardModule, MatButtonModule, MatToolbarModule, MatExpansionModule, MatSelectModule } from '@angular/material';
 import { HeaderComponent } from './header/header.component';
 import { MsgListComponent } from './messages/msg-list/msg-list.component';
 import { UserCreateComponent } from './users/user-create/user-create.component';
@@ -35,6 +35,7 @@ import { AppRoutingModule } from './app-routing.module';
     MatInputModule,
     MatCardModule,
     MatButtonModule,
+    MatSelectModule,
     MatToolbarModule,
     MatExpansionModule,
     HttpClientModule
