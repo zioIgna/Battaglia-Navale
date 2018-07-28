@@ -1,5 +1,6 @@
 <mat-accordion multi="true" *ngIf="users.length > 0">
     <p class="mat-title">Benvenuto {{loggedUserEmail}}! </p>
+    <p class="mat-subheading-2">Questi sono gli utenti registrati</p>
     <mat-expansion-panel *ngFor="let user of users">
         <mat-expansion-panel-header>
             {{user.email}}

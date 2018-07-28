@@ -9,6 +9,7 @@ import { UsersService } from '../users/users.service';
 export class MessagesService implements OnInit {
     private messages: Message[] = [];
     private messagesUpdated = new Subject<Message[]>();
+    private soloAutori: string[] = [];
     private loggedEmail: string;
     private loggedEmailListener: Subscription;
     private loggedEmailListenerSub: Subscription;
@@ -33,13 +34,13 @@ export class MessagesService implements OnInit {
         // this.loggedEmail = this.usersService.getLoggedEmail();
         // this.loggedEmailListenerSub = this.usersService.getLoggedEmailListener().subscribe(loggedUser => {
         //     this.loggedEmail = loggedUser;
-            this.http.get<{ note: string, messages: Message[] }>('http://localhost:3000/api/messages/' + loggedUser)
-                .subscribe((msgData) => {
-                    this.messages = msgData.messages;
-                    this.messagesUpdated.next([...this.messages]);
-                }, err => {
-                    console.log('Recupero messaggi non riuscito', err);
-                });
+        this.http.get<{ note: string, messages: Message[] }>('http://localhost:3000/api/messages/' + loggedUser)
+            .subscribe((msgData) => {
+                this.messages = msgData.messages;
+                this.messagesUpdated.next([...this.messages]);
+            }, err => {
+                console.log('Recupero messaggi non riuscito', err);
+            });
         // });
 
 
@@ -72,6 +73,8 @@ export class MessagesService implements OnInit {
         // return observable;
     }
 
+
+
     getMessagesUpdatedListener() {
         return this.messagesUpdated.asObservable();
 
@@ -93,6 +96,10 @@ export class MessagesService implements OnInit {
             }, err => {
                 console.log('No message sent ', err);
             });
+    }
+
+    sortMessages(messages: Message[]) {
+
     }
 
     ngOnInit() {

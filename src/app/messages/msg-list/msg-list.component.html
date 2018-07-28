@@ -1,4 +1,5 @@
-<mat-accordion multi="true" *ngIf="messages.length > 0">
+<!-- <mat-accordion multi="true" *ngIf="messages.length > 0">
+    <p class="mat-title">Ecco i tuoi messaggi</p>
     <mat-expansion-panel *ngFor="let msg of messages">
         <mat-expansion-panel-header>
             {{msg.autore}}
@@ -10,4 +11,14 @@
     </mat-expansion-panel>
 </mat-accordion>
 <p class="info-text mat-body-1" *ngIf="messages.length <=0">No messages added yet!</p>
-<p class="info-text mat-body-1" *ngIf="messages[0]?.timeStamp<messages[1]?.timeStamp">{{messages[0].autore}}</p>
+<p class="info-text mat-body-1" *ngIf="messages[0]?.timeStamp<messages[1]?.timeStamp">{{messages[0].autore}}</p> -->
+
+<mat-accordion multi="true" *ngIf="otherMsgs.length > 0">
+    <p class="mat-title">Ecco i tuoi messaggi</p>
+    <mat-expansion-panel *ngFor="let array of otherMsgs">
+        <mat-expansion-panel-header>
+            {{array[0].autore === this.loggedEmail? array[0].destinatario : array[0].autore}}
+        </mat-expansion-panel-header>
+
+    </mat-expansion-panel>
+</mat-accordion>
