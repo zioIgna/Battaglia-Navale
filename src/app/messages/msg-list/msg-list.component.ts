@@ -25,6 +25,7 @@ export class MsgListComponent implements OnInit, OnDestroy {
     sortedMsgs: {}; // messaggi raggruppati per autori in array (array di array) a indici letterali (email)
     myMsgs: Message[] = [];
     otherMsgs: any[] = [];
+    finalMsgs: any[] = [];
 
     constructor(public msgService: MessagesService, public usersService: UsersService) { }
 
@@ -37,7 +38,7 @@ export class MsgListComponent implements OnInit, OnDestroy {
         }
     }
 
-    alloca(msgs: Message[], autori: string[]) { // raggruppa i messaggi per autori (in un array di array)
+    alloca(msgs: Message[], autori: string[]) { // raggruppa i messaggi per autori (in un oggetto di array)
         // const conversazioni: any[] = [];
         // for (const header of autori) {
         //     conversazioni[header] = [];
@@ -58,6 +59,8 @@ export class MsgListComponent implements OnInit, OnDestroy {
         //     }
         //     this.sortedMsgs.push(this.sortedMsgs[header]);
         // }
+
+        // questa funz aveva funzionato, da qui:
         const conversazioni = {};
         for (const header of autori) {
             conversazioni[header] = [];
@@ -73,6 +76,19 @@ export class MsgListComponent implements OnInit, OnDestroy {
             }
         }
         return conversazioni;
+        // a qui
+
+    }
+
+    groupBy(objectArray, property) {
+        return objectArray.reduce(function (acc, obj) {
+            const key = obj[property];
+            if (!acc[key]) {
+                acc[key] = [];
+            }
+            acc[key].push(obj);
+            return acc;
+        }, {});
     }
 
     getMyMsgs(autore: string) {     // porre: myMsgs = getMsgs(...) per popolare tale array con i messaggi del soggetto loggato
@@ -100,7 +116,7 @@ export class MsgListComponent implements OnInit, OnDestroy {
     //     }
     // }
 
-    spartisci(myMsgs, otherMsgs) {   // per spostare i myMsgs negli array con i relativi destinatari
+    spartisci3(myMsgs, otherMsgs) {   // per spostare i myMsgs negli array con i relativi destinatari
         for (let i = 0; i < myMsgs.length; i++) {
             for (let j = 0; j < otherMsgs.length; j++) {
                 if (myMsgs[i].destinatario === otherMsgs[j][0].autore) {
@@ -121,11 +137,53 @@ export class MsgListComponent implements OnInit, OnDestroy {
         }
     }
 
+    spartisci4(myMsgs, otherMsgs) {   // per spostare i myMsgs negli array con i relativi destinatari
+        // const newMsgs = [...otherMsgs];
+        const newMsgs = JSON.parse(JSON.stringify(otherMsgs));
+        console.log('questi sono i newMsgs: ', newMsgs);
+        for (let i = 0; i < myMsgs.length; i++) {
+            for (let j = 0; j < otherMsgs.length; j++) {
+                if (myMsgs[i].destinatario === otherMsgs[j][0].autore) {
+                    newMsgs[j].push(myMsgs[i]);
+                    myMsgs.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+        if (myMsgs.length > 0) {
+            for (let i = 0; i < myMsgs.length; i++) {
+                const newArr = [];
+                newArr.push(myMsgs[i]);
+                otherMsgs.push(newArr);
+                myMsgs.splice(i, 1);
+                i--;
+            }
+        }
+        return newMsgs;
+    }
+
+    spartisci(sortedMsgs) {
+        sortedMsgs[this.loggedEmail].forEach(msg => {
+            if (!sortedMsgs[msg.destinatario]) {
+                sortedMsgs[msg.destinatario] = [];
+            }
+            sortedMsgs[msg.destinatario].push(msg);
+        });
+        delete sortedMsgs[this.loggedEmail];
+        const allKeys = Object.keys(sortedMsgs);
+        const newMsgs = [];
+        for (const prop of allKeys) {
+            newMsgs.push(sortedMsgs[prop]);
+        }
+        return newMsgs;
+    }
+
     sortMessages() {
         console.log('questi sono i messages: ', this.messages);
         this.getAuthors(this.messages);
         console.log('ho ottenuto gli autori: ', this.soloAutori);
-        this.sortedMsgs = this.alloca(this.messages, this.soloAutori);
+        // this.sortedMsgs = this.alloca(this.messages, this.soloAutori);
+        this.sortedMsgs = this.groupBy(this.messages, 'autore');
         console.log('ho spartito i messaggi per autori', this.sortedMsgs);
         // console.log('questa è la lunghezza di sortedMsgs: ', this.sortedMsgs.length);
         // console.log('e questo è il primo vettore dentro sortedMsgs: ', this.sortedMsgs[0]);
@@ -143,8 +201,10 @@ export class MsgListComponent implements OnInit, OnDestroy {
                 obj[key] = this.sortedMsgs[key]];
             }, []);
         console.log('questi sono gli otherMsgs: ', this.otherMsgs);
-        this.spartisci(this.myMsgs, this.otherMsgs);
-        console.log('ora questi sono gli otherMsgs: ', this.otherMsgs);
+        // this.finalMsgs = this.spartisci(this.myMsgs, this.otherMsgs);
+        this.finalMsgs = this.spartisci(this.sortedMsgs);
+        console.log('ora questi sono i sortedMsgs: ', this.finalMsgs);
+        // console.log('ora questi sono i finalMsgs: ', this.finalMsgs);
     }
 
     ngOnInit() {

@@ -1,3 +1,4 @@
+import { ConnectionService } from './../connection.service';
 import { Message } from './message.model';
 import { Injectable, OnInit } from '@angular/core';
 import { Subject, Observable, Subscription } from 'rxjs';
@@ -18,7 +19,7 @@ export class MessagesService implements OnInit {
     // private socket;
     // private url = 'http://localhost:3000/api/messages';
 
-    constructor(private http: HttpClient, private usersService: UsersService) { }
+    constructor(private http: HttpClient, private usersService: UsersService, private connessione: ConnectionService) { }
 
     getMessages(loggedUser: string) {
         // if (this.loggedEmail) {
@@ -107,5 +108,6 @@ export class MessagesService implements OnInit {
         this.loggedEmailListener = this.usersService.getLoggedEmailListener().subscribe(loggedMail => {
             this.loggedEmail = loggedMail;
         });
+        // this.connessione.getConnection();
     }
 }
