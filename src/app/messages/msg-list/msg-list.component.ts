@@ -173,7 +173,14 @@ export class MsgListComponent implements OnInit, OnDestroy {
         const allKeys = Object.keys(sortedMsgs);
         const newMsgs = [];
         for (const prop of allKeys) {
+            sortedMsgs[prop].sort(function (a, b) {
+                return (+new Date(a.timeStamp) - (+new Date(b.timeStamp))) * (-1);
+            });
             newMsgs.push(sortedMsgs[prop]);
+            // console.log('questo è il sortedMsgs[prop]: ', sortedMsgs[prop]);
+            // console.log('questo è il sortedMsgs[prop][0].timeStamp: ', typeof sortedMsgs[prop][0].timeStamp);
+            // console.log('questo è il timeStamp: ', newMsgs[0][0].timeStamp);
+            // console.log('il timeStamp è meno recente: ', new Date(newMsgs[0][0].timeStamp) > new Date('01-01-2001'));
         }
         return newMsgs;
     }
