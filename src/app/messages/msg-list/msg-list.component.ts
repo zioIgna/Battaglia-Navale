@@ -79,12 +79,12 @@ export class MsgListComponent implements OnInit, OnDestroy {
         return { ...this.sortedMsgs[autore] };
     }
 
-    getOtherMsgs(autore: string) {  // per popolare otherMsgs solo con i messaggi degli altri utenti
-        this.otherMsgs = this.sortedMsgs.filter((element, index, array) => {
-            console.log(Object.keys(array)[index + array.length]);
-            return Object.keys(array)[index + array.length] !== autore;
-        });
-    }
+    // getOtherMsgs(autore: string) {  // per popolare otherMsgs solo con i messaggi degli altri utenti
+    //     this.otherMsgs = this.sortedMsgs.filter((element, index, array) => {
+    //         console.log(Object.keys(array)[index + array.length]);
+    //         return Object.keys(array)[index + array.length] !== autore;
+    //     });
+    // }
 
     // spartisci2(myMsgs, otherMsgs) {   // per spostare i myMsgs negli array con i relativi destinatari
     //     for (let i = 0; i < myMsgs.length; i++) {
