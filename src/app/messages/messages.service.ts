@@ -92,8 +92,11 @@ export class MessagesService implements OnInit {
             .subscribe((responseData) => {
                 console.log(responseData.note);
                 console.log('messaggio salvato: ', responseData.msg);
-                this.messages.push(newMessage);
-                this.messagesUpdated.next([...this.messages]);
+                // queste 2 righe non servono se si imposta il socket:
+                // this.messages.push(newMessage);
+                // this.messagesUpdated.next([...this.messages]);
+                this.connessione.socket
+                    .emit('new msg', { message: 'nuovo messaggio inviato', payload: responseData.msg });  // linea aggiunta
             }, err => {
                 console.log('No message sent ', err);
             });

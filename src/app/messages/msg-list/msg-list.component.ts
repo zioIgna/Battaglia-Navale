@@ -163,13 +163,15 @@ export class MsgListComponent implements OnInit, OnDestroy {
     }
 
     spartisci(sortedMsgs) {
-        sortedMsgs[this.loggedEmail].forEach(msg => {
-            if (!sortedMsgs[msg.destinatario]) {
-                sortedMsgs[msg.destinatario] = [];
-            }
-            sortedMsgs[msg.destinatario].push(msg);
-        });
-        delete sortedMsgs[this.loggedEmail];
+        if (sortedMsgs[this.loggedEmail]) {
+            sortedMsgs[this.loggedEmail].forEach(msg => {
+                if (!sortedMsgs[msg.destinatario]) {
+                    sortedMsgs[msg.destinatario] = [];
+                }
+                sortedMsgs[msg.destinatario].push(msg);
+            });
+            delete sortedMsgs[this.loggedEmail];
+        }
         const allKeys = Object.keys(sortedMsgs);
         const newMsgs = [];
         for (const prop of allKeys) {
@@ -197,8 +199,10 @@ export class MsgListComponent implements OnInit, OnDestroy {
         // console.log('e questo è il secondo vettore dentro sortedMsgs: ', this.sortedMsgs[1]);
         // console.log('e la sua lunghezza: ', this.sortedMsgs[1].length);
         // this.myMsgs = this.getMyMsgs(this.loggedEmail);
-        this.myMsgs = [...this.sortedMsgs[this.loggedEmail]];
-        console.log('questi sono i myMsgs: ', this.myMsgs);
+        // prossime 2 righe forse non servono:
+        // this.myMsgs = [...this.sortedMsgs[this.loggedEmail]];
+        // console.log('questi sono i myMsgs: ', this.myMsgs);
+
         // this.getOtherMsgs(this.loggedEmail);
         this.otherMsgs = Object.keys(this.sortedMsgs)
             .filter(key => key !== this.loggedEmail)

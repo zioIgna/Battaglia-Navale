@@ -75,5 +75,9 @@ io.on('connection', function (socket) {
     socket.on('user updated', function (obj){
         console.log(obj.message);
         io.emit('user updated');
+    });
+    socket.on('new msg', function (obj){
+        console.log(obj.message);
+        io.emit('new msg');
     })
 });

@@ -1,47 +1,60 @@
 import { Component, OnInit } from '@angular/core';
 import { ConnectionService } from './connection.service';
 import { UsersService } from './users/users.service';
+import { MessagesService } from './messages/messages.service';
+import { Subscription } from '../../node_modules/rxjs';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+    private loggedEmail: string;
+    private loggedEmailListener: Subscription;
 
-  constructor(private connessione: ConnectionService, private usersService: UsersService) { }
+    constructor(private connessione: ConnectionService, private usersService: UsersService, private msgService: MessagesService) { }
 
-  ngOnInit() {
-    // if (this.connessione.socket == null) {
-    //   this.connessione.socket = this.connessione.getConnection();
-    // }
-    this.connessione.getConnection();
-    console.log(this.connessione.socket);
-    // socket.on('connection', () => {
-    //   console.log('user connected');
-    // });
+    ngOnInit() {
+        // if (this.connessione.socket == null) {
+        //   this.connessione.socket = this.connessione.getConnection();
+        // }
+        this.connessione.getConnection();
+        console.log(this.connessione.socket);
+        // socket.on('connection', () => {
+        //   console.log('user connected');
+        // });
 
-    // prova: commento questa funzione per provare una alternativa all'evento "new user"
-    // this.connessione.socket.on('new user', (obj) => {
-    //   this.usersService.users.push(obj.payload);
-    //   this.usersService.usersUpdated.next([...this.usersService.users]);
-    //   // this.usersService.createUserNoPropagate(obj.payload.email, obj.payload.password);  // questa linea non serve
-    //   console.log(obj);
-    // });
+        // prova: commento questa funzione per provare una alternativa all'evento "new user"
+        // this.connessione.socket.on('new user', (obj) => {
+        //   this.usersService.users.push(obj.payload);
+        //   this.usersService.usersUpdated.next([...this.usersService.users]);
+        //   // this.usersService.createUserNoPropagate(obj.payload.email, obj.payload.password);  // questa linea non serve
+        //   console.log(obj);
+        // });
 
-    this.connessione.socket.on('new user', (obj) => {
-      this.usersService.getUsers();
-    });
+        this.loggedEmail = this.usersService.getLoggedEmail();
+        this.loggedEmailListener = this.usersService.getLoggedEmailListener().subscribe(loggedMail => {
+            this.loggedEmail = loggedMail;
+        });
 
-    this.connessione.socket.on('deleted user', () => {
-      this.usersService.getUsers();
-    });
+        this.connessione.socket.on('new user', (obj) => {
+            this.usersService.getUsers();
+        });
 
-    this.connessione.socket.on('user updated', () => {
-      this.usersService.getUsers();
-    });
+        this.connessione.socket.on('deleted user', () => {
+            this.usersService.getUsers();
+        });
 
-  }
+        this.connessione.socket.on('user updated', () => {
+            this.usersService.getUsers();
+        });
+
+        this.connessione.socket.on('new msg', () => {
+            this.msgService.getMessages(this.loggedEmail);
+        });
+
+    }
 
 
 }
