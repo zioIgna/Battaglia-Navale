@@ -18,6 +18,7 @@
     <mat-expansion-panel *ngFor="let array of finalMsgs">
         <mat-expansion-panel-header>
             {{array[0].autore === this.loggedEmail? array[0].destinatario : array[0].autore}}
+            <!-- <p [matBadge]="badgeCount" matBadgeOverlap="false" *ngIf="badgeCount"></p> -->
         </mat-expansion-panel-header>
         <p class="mat-body-1" *ngFor="let text of array" [ngStyle]="{'text-align': text.autore === this.loggedEmail ? 'right' : 'left'}">
             <small>Mitt:</small> {{text.autore}}

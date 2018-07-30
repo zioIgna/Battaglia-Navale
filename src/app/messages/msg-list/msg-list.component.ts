@@ -26,6 +26,7 @@ export class MsgListComponent implements OnInit, OnDestroy {
     myMsgs: Message[] = [];
     otherMsgs: any[] = [];
     finalMsgs: any[] = [];
+    // badgeCount = 0;
 
     constructor(public msgService: MessagesService, public usersService: UsersService) { }
 
