@@ -13,7 +13,8 @@ import {
   MatToolbarModule,
   MatExpansionModule,
   // MatBadgeModule,
-  MatSelectModule
+  MatSelectModule,
+  MatListModule
 } from '@angular/material';
 import { HeaderComponent } from './header/header.component';
 import { MsgListComponent } from './messages/msg-list/msg-list.component';
@@ -23,6 +24,8 @@ import { UserLoginComponent } from './users/user-login/user-login.component';
 import { AuthInterceptor } from './users/auth-interceptor';
 import { OverviewComponent } from './overview/overview.component';
 import { AppRoutingModule } from './app-routing.module';
+import { GamesComponent } from './games/games.component';
+import { GameListComponent } from './games/game-list/game-list.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +36,9 @@ import { AppRoutingModule } from './app-routing.module';
     UserCreateComponent,
     UserLoginComponent,
     UsersListComponent,
-    OverviewComponent
+    OverviewComponent,
+    GamesComponent,
+    GameListComponent
   ],
   imports: [
     BrowserModule,
@@ -44,6 +49,7 @@ import { AppRoutingModule } from './app-routing.module';
     MatInputModule,
     MatCardModule,
     MatButtonModule,
+    MatListModule,
     MatSelectModule,
     MatToolbarModule,
     MatExpansionModule,

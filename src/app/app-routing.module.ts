@@ -1,3 +1,4 @@
+import { GamesComponent } from './games/games.component';
 import { NgModule } from '../../node_modules/@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './overview/overview.component';
@@ -17,7 +18,8 @@ const routes: Routes = [
             { path: '', component: MsgListComponent }
         ]
     },
-    { path: 'signup', component: UserCreateComponent }
+    { path: 'signup', component: UserCreateComponent },
+    { path: 'games', component: GamesComponent}
 ];
 
 @NgModule({
