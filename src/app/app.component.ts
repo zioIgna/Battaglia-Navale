@@ -3,6 +3,7 @@ import { ConnectionService } from './connection.service';
 import { UsersService } from './users/users.service';
 import { MessagesService } from './messages/messages.service';
 import { Subscription } from '../../node_modules/rxjs';
+import { GamesService } from './games/games.service';
 
 @Component({
     selector: 'app-root',
@@ -13,7 +14,12 @@ export class AppComponent implements OnInit {
     private loggedEmail: string;
     private loggedEmailListener: Subscription;
 
-    constructor(private connessione: ConnectionService, private usersService: UsersService, private msgService: MessagesService) { }
+    constructor(
+        private connessione: ConnectionService,
+        private usersService: UsersService,
+        private msgService: MessagesService,
+        private gamesService: GamesService
+    ) { }
 
     ngOnInit() {
         // if (this.connessione.socket == null) {
@@ -52,6 +58,10 @@ export class AppComponent implements OnInit {
 
         this.connessione.socket.on('new msg', () => {
             this.msgService.getMessages(this.loggedEmail);
+        });
+
+        this.connessione.socket.on('new game', (email) => {
+            this.gamesService.getGames();
         });
 
     }

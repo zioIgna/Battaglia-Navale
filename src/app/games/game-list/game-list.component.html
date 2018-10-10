@@ -2,5 +2,7 @@
   game-list works!
 </p>
 <mat-nav-list>
-  <mat-list-item *ngFor="let game of games">{{game}}</mat-list-item>
+  <mat-list-item *ngFor="let game of games">
+    <div *ngIf="game !== loggedUserEmail">{{game}}</div>
+  </mat-list-item>
 </mat-nav-list>
