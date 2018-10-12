@@ -64,6 +64,11 @@ export class AppComponent implements OnInit {
             this.gamesService.getGames();
         });
 
+        this.connessione.socket.on('logged user', (users) => {
+            this.usersService.loggedEmails = users.map(user => user.email);
+            console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
+        });
+
     }
 
 

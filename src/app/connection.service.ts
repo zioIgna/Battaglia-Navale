@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as socketIo from 'socket.io-client';
+import { Subject, Observable } from 'rxjs';
 // import { UsersService } from './users/users.service';
 
 @Injectable({
@@ -7,6 +8,18 @@ import * as socketIo from 'socket.io-client';
 })
 export class ConnectionService {
     socket = null;
+
+    // da qui inserito per prova di trasmissione id connessione
+    private subject = new Subject<any>();
+
+    sendId(id: any) {
+        this.subject.next({ myId: id });
+    }
+
+    getId(): Observable<any> {
+        return this.subject.asObservable();
+    }
+    // a qui
 
     // ngOnInit() {
     //     this.socket = socketIo('http://localhost:3000');
@@ -17,6 +30,7 @@ export class ConnectionService {
     getConnection() {
         if (this.socket === null) {
             this.socket = socketIo('http://localhost:3000');
+            console.log('i dati del socket appena connesso sono: ' + this.socket);  // aggiunto per prova
         }
     }
 

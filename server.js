@@ -50,6 +50,9 @@ const server = http.Server(app);    //ho cambiato il metodo da "createServer(app
 
 // costanti aggiunte per supporto a socket.io:
 const io = require("socket.io").listen(server);
+// let loggedIds = [];
+// let loggedEmails = [];
+let loggedUsers = [];
 // fin qui
 
 server.on("error", onError);
@@ -60,10 +63,31 @@ server.listen(port, function () {
 );
 
 io.on('connection', function (socket) {
+    const myId = socket.id; // aggiunto per implementare un collegamento utente-connessione
+    console.log("Socket connected: " + myId);   // aggiunto per implementare un collegamento utente-connessione
     console.log("USER CONNECTED...");
+    socket.on('logged user', function (datiConnessione){
+        // loggedIds.push(myId);
+        // loggedEmails.push(datiConnessione.email);
+        loggedUsers.push(datiConnessione);
+        io.emit('logged user', loggedUsers);
+    });
     socket.on('disconnect', function () {
+        loggedUsers.pop(loggedUsers.find(element => element.connectionId === myId));
+        io.emit('logged user', loggedUsers);
         console.log('user disconnected');
     });
+    socket.on('disconnect', function (){    // aggiunto per implementare un collegamento utente-connessione
+        console.log("Socket disconnected: " +  myId);   // aggiunto per implementare un collegamento utente-connessione
+    });
+    socket.on('user loggedOut', function (datiConnessione) {
+        loggedUsers.pop(loggedUsers.find(element => element.connectionId === datiConnessione.connectionId));
+        io.emit('logged user', loggedUsers);
+        console.log('user disconnected');
+    });    
+    // socket.on('user logged', function (){
+    //     console.log("Questo è il mio socket.id: " + myId);
+    // });
     socket.on('new user', function (obj) {
         console.log(obj.message);
         io.emit('new user', obj);

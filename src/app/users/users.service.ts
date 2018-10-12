@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { Router } from '@angular/router';
 import { ConnectionService } from '../connection.service';
 import { User } from './user.model';
@@ -22,6 +23,8 @@ export class UsersService implements OnInit {
     private loggedEmail: string;
     private loggedEmailListener = new Subject<string>();
     private tokenTimer: any;
+    private connectionId: string;
+    loggedEmails = [];
 
     constructor(private connessione: ConnectionService, private http: HttpClient, private router: Router) { }
 
@@ -55,6 +58,10 @@ export class UsersService implements OnInit {
 
     getLoggedEmailListener() {
         return this.loggedEmailListener.asObservable();
+    }
+
+    getConnectionId() {
+        return this.connectionId;
     }
 
     getUsers() {
@@ -126,6 +133,10 @@ export class UsersService implements OnInit {
                     //
                     this.authStatusListener.next(true);  // questo comando serve solo all'header
                     this.router.navigate(['/overview']);
+                    this.connectionId = this.connessione.socket.id;
+                    console.log('Nel log-in lo id connessione è: ' + this.connectionId);
+                    const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
+                    this.connessione.socket.emit('logged user', datiConnessione);
                 }
             });
     }
@@ -138,6 +149,8 @@ export class UsersService implements OnInit {
         this.loggedEmail = null;
         this.authStatusListener.next(false);
         clearTimeout(this.tokenTimer);
+        const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
+        this.connessione.socket.emit('user loggedOut', datiConnessione);
         this.router.navigate(['/']);
     }
 
@@ -162,15 +175,15 @@ export class UsersService implements OnInit {
             msg: string,
             outcome: object
         }>('http://localhost:3000/api/users/switch/' + userId, newSetting)
-        .subscribe(
-            (response) => {
-            console.log('Msg frontend: user\'s role switched', response);
-            this.connessione.socket.emit('user updated', { message: 'user\'s role switched' });
-            },
-            (err) => {
-                console.log('Error: user\'s role not switched', err);
-            }
-        );
+            .subscribe(
+                (response) => {
+                    console.log('Msg frontend: user\'s role switched', response);
+                    this.connessione.socket.emit('user updated', { message: 'user\'s role switched' });
+                },
+                (err) => {
+                    console.log('Error: user\'s role not switched', err);
+                }
+            );
     }
 
     // createUserNoPropagate(email: string, password: string) {

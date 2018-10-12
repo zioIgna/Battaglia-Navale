@@ -1,3 +1,4 @@
+import { ConnectionService } from './../../connection.service';
 import { UsersService } from 'src/app/users/users.service';
 import { GamesService } from './../games.service';
 import { Component, OnInit } from '@angular/core';
@@ -14,7 +15,12 @@ export class GameListComponent implements OnInit {
   private loggedUserEmail: string;
   private loggedEmailSub: Subscription;
 
-  constructor(private gamesService: GamesService, private usersService: UsersService) { }
+  // aggiunto da qui
+  private connectionId: string;
+  // private connectionIdSub: Subscription;
+  // a qui
+
+  constructor(private gamesService: GamesService, private usersService: UsersService, private connectionService: ConnectionService) { }
 
   ngOnInit() {
     this.loggedUserEmail = this.usersService.getLoggedEmail();
@@ -23,5 +29,12 @@ export class GameListComponent implements OnInit {
       this.loggedUserEmail = loggedUser;
       console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);
     });
+    // this.connectionId = this.connectionService.socket.id;
+    this.connectionId = this.usersService.getConnectionId();
+    console.log('Nella game-list lo id connessione è: ' + this.connectionId);
+    // this.connectionIdSub = this.connectionService.getId().subscribe(id => {
+    //   this.connectionId = id;
+    //   console.log('Nella game-list lo id connessione è: ' + this.connectionId);
+    // });
   }
 }
