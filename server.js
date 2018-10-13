@@ -73,7 +73,8 @@ io.on('connection', function (socket) {
         io.emit('logged user', loggedUsers);
     });
     socket.on('disconnect', function () {
-        loggedUsers.pop(loggedUsers.find(element => element.connectionId === myId));
+        // loggedUsers.pop(loggedUsers.find(element => element.connectionId === myId));
+        loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
         io.emit('logged user', loggedUsers);
         console.log('user disconnected');
     });
@@ -81,10 +82,12 @@ io.on('connection', function (socket) {
         console.log("Socket disconnected: " +  myId);   // aggiunto per implementare un collegamento utente-connessione
     });
     socket.on('user loggedOut', function (datiConnessione) {
-        loggedUsers.pop(loggedUsers.find(element => element.connectionId === datiConnessione.connectionId));
+      // loggedUsers.pop(loggedUsers.find(element => element.connectionId === datiConnessione.connectionId));
+      loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(datiConnessione.connectionId), 1);
+      console.log('questa è lo id da eliminare a un logOut: ' + loggedUsers.map(function(element) {return element.connectionId}).indexOf(datiConnessione.connectionId));
         io.emit('logged user', loggedUsers);
-        console.log('user disconnected');
-    });    
+        console.log('user disconnected (loggedOut)');
+    });
     // socket.on('user logged', function (){
     //     console.log("Questo è il mio socket.id: " + myId);
     // });

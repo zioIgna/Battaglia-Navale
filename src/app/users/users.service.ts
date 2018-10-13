@@ -136,6 +136,7 @@ export class UsersService implements OnInit {
                     this.connectionId = this.connessione.socket.id;
                     console.log('Nel log-in lo id connessione è: ' + this.connectionId);
                     const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
+                    console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
                     this.connessione.socket.emit('logged user', datiConnessione);
                 }
             });
@@ -143,14 +144,15 @@ export class UsersService implements OnInit {
 
     logout() {
         // authStatusListener serve solo all'header per sapere che bottoni mostrare
+        const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
         this.token = null;
         this.isAdmin = false;
         this.loggedUserId = null;
         this.loggedEmail = null;
         this.authStatusListener.next(false);
         clearTimeout(this.tokenTimer);
-        const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
         this.connessione.socket.emit('user loggedOut', datiConnessione);
+        console.log('questi sono i dati connessione che invio al logout: ' + JSON.stringify(datiConnessione));
         this.router.navigate(['/']);
     }
 

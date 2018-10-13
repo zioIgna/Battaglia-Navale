@@ -1,6 +1,9 @@
 <mat-toolbar color="primary">
-    <span>
+    <span *ngIf="!userIsAuthenticated">
         <a routerLink="/">Battaglia Navale</a>
+    </span>
+    <span *ngIf="userIsAuthenticated">
+      <a routerLink="/overview">Battaglia Navale</a>
     </span>
     <span class="spacer"></span>
     <ul>
