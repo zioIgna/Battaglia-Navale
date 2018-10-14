@@ -53,6 +53,7 @@ const io = require("socket.io").listen(server);
 // let loggedIds = [];
 // let loggedEmails = [];
 let loggedUsers = [];
+let games = [];
 // fin qui
 
 server.on("error", onError);
@@ -106,5 +107,9 @@ io.on('connection', function (socket) {
     socket.on('new msg', function (obj){
         console.log(obj.message);
         io.emit('new msg');
-    })
+    });
+    socket.on('new game', function(email){
+      games.push(email);
+      io.emit('new game', games);
+    });
 });

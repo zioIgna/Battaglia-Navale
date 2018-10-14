@@ -28,6 +28,11 @@ export class GamesComponent implements OnInit, OnDestroy {
       this.alreadyWaiting = this.gamesService.games.includes(this.loggedUserEmail);
       console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);
     });
+    this.alreadyWaitingSub = this.gamesService.getAlreadyWaitingListener().subscribe(value => this.alreadyWaiting = value);
+  }
+
+  onCreateGame() {
+    this.gamesService.createGame();
   }
 
   ngOnDestroy() {

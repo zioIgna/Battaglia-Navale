@@ -1,7 +1,7 @@
 import { ConnectionService } from './../../connection.service';
 import { UsersService } from 'src/app/users/users.service';
 import { GamesService } from './../games.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 
@@ -10,9 +10,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './game-list.component.html',
   styleUrls: ['./game-list.component.css']
 })
-export class GameListComponent implements OnInit {
-  games: string[] = ['Player1', 'Player2', 'Player3', 'ignaziocarbonaro@hotmail.com'];
-  private loggedUserEmail: string;
+export class GameListComponent implements OnInit, OnDestroy {
+  games: string[]; // ['Player1', 'Player2', 'Player3', 'ignaziocarbonaro@hotmail.com'];
+  gamesSub: Subscription;
+  loggedUserEmail: string;
   private loggedEmailSub: Subscription;
 
   // aggiunto da qui
@@ -36,5 +37,12 @@ export class GameListComponent implements OnInit {
     //   this.connectionId = id;
     //   console.log('Nella game-list lo id connessione è: ' + this.connectionId);
     // });
+    this.games = this.gamesService.games;
+    this.gamesSub = this.gamesService.getGamesListener().subscribe(newGames => this.games = newGames);
+  }
+
+  ngOnDestroy() {
+    this.gamesSub.unsubscribe();
+    this.loggedEmailSub.unsubscribe();
   }
 }

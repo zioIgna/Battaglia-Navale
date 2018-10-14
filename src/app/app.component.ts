@@ -60,15 +60,14 @@ export class AppComponent implements OnInit {
             this.msgService.getMessages(this.loggedEmail);
         });
 
-        this.connessione.socket.on('new game', (email) => {
-            this.gamesService.getGames();
-        });
-
         this.connessione.socket.on('logged user', (users) => {
-            this.usersService.loggedEmails = users.map(user => user.email);
-            console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
+          this.usersService.loggedEmails = users.map(user => user.email);
+          console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
         });
 
+        this.connessione.socket.on('new game', (newGames) => {
+          this.gamesService.sendGames(newGames);
+        });
     }
 
 
