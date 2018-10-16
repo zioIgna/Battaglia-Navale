@@ -26,6 +26,9 @@ import { OverviewComponent } from './overview/overview.component';
 import { AppRoutingModule } from './app-routing.module';
 import { GamesComponent } from './games/games.component';
 import { GameListComponent } from './games/game-list/game-list.component';
+import { BattleComponent } from './games/battle/battle.component';
+import { BoardComponent } from './games/battle/board/board.component';
+import { PlayerComponent } from './games/battle/player/player.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,10 @@ import { GameListComponent } from './games/game-list/game-list.component';
     UsersListComponent,
     OverviewComponent,
     GamesComponent,
-    GameListComponent
+    GameListComponent,
+    BattleComponent,
+    BoardComponent,
+    PlayerComponent
   ],
   imports: [
     BrowserModule,

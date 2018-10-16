@@ -3,6 +3,10 @@ import { UsersService } from 'src/app/users/users.service';
 import { GamesService } from './../games.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { GamesComponent } from '../games.component';
+import { BattleComponent } from '../battle/battle.component';
+import { BattleService } from '../battle/battle.service';
 
 
 @Component({
@@ -21,7 +25,13 @@ export class GameListComponent implements OnInit, OnDestroy {
   // private connectionIdSub: Subscription;
   // a qui
 
-  constructor(private gamesService: GamesService, private usersService: UsersService, private connectionService: ConnectionService) { }
+  constructor(
+    private gamesService: GamesService,
+    private usersService: UsersService,
+    private connectionService: ConnectionService,
+    private router: Router,
+    private battleService: BattleService
+  ) { }
 
   ngOnInit() {
     this.loggedUserEmail = this.usersService.getLoggedEmail();
@@ -39,6 +49,11 @@ export class GameListComponent implements OnInit, OnDestroy {
     // });
     this.games = this.gamesService.games;
     this.gamesSub = this.gamesService.getGamesListener().subscribe(newGames => this.games = newGames);
+  }
+
+  onStartBattle() {
+    this.battleService.createBoards();
+    this.router.navigate(['/battle']);
   }
 
   ngOnDestroy() {

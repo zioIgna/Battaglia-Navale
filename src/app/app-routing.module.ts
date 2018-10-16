@@ -7,6 +7,7 @@ import { UserCreateComponent } from './users/user-create/user-create.component';
 import { UsersListComponent } from './users/users-list/users-list.component';
 import { MessageCreateComponent } from './messages/message-create/message-create.component';
 import { MsgListComponent } from './messages/msg-list/msg-list.component';
+import { BattleComponent } from './games/battle/battle.component';
 
 const routes: Routes = [
     { path: '', component: UserLoginComponent },
@@ -19,7 +20,8 @@ const routes: Routes = [
         ]
     },
     { path: 'signup', component: UserCreateComponent },
-    { path: 'games', component: GamesComponent}
+    { path: 'games', component: GamesComponent},
+    { path: 'battle', component: BattleComponent}
 ];
 
 @NgModule({

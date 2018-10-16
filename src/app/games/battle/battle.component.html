@@ -1,0 +1,15 @@
+<p>
+  battle works!
+</p>
+<div *ngFor="let board of boards; let i = index">
+  <p>Player: {{board.player.id}}</p>
+  <table>
+    <tr *ngFor="let row of board.tiles; let j = index">
+      <td *ngFor="let col of row; let k = index"
+      (click) = "getPosition($event)"
+      id="t{{i}}{{j}}{{k}}">
+        {{col.value}}
+      </td>
+    </tr>
+  </table>
+</div>
