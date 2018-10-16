@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { BoardComponent } from './board/board.component';
 import { PlayerComponent } from './player/player.component';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { ConnectionService } from 'src/app/connection.service';
 import { UsersService } from 'src/app/users/users.service';
 import { Router } from '@angular/router';
@@ -9,15 +9,24 @@ import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
-export class BattleService {
+export class BattleService implements OnInit {
 
   private boards: BoardComponent[] = [];
   private boardsListener = new Subject<BoardComponent[]>();
   boardSize = 10;
   playersNumber = 2;
   currPlayer = 0;
+  activePlayers: string[] = [];
+  private activePlayersSub: Subscription;
+  // private activePlayersListener = new Subject<string[]>();
 
   constructor(private connection: ConnectionService, private usersService: UsersService, private router: Router) { }
+
+  ngOnInit() {
+    this.activePlayers = this.usersService.activePlayers;
+    this.activePlayersSub = this.usersService.getActivePlayersListener()
+      .subscribe(newActivePlayers => this.activePlayers = newActivePlayers);
+  }
 
   getBoards() {
     return [...this.boards];
@@ -26,6 +35,14 @@ export class BattleService {
   getBoardsListener() {
     return this.boardsListener.asObservable();
   }
+
+  // sendActivePlayers(newActivePlayers) {
+  //   this.activePlayersListener.next(newActivePlayers);
+  // }
+
+  // getActivePlayersListener() {
+  //   return this.activePlayersListener.asObservable();
+  // }
 
   createBoards(players) {
     for (let i = 0; i < this.playersNumber; i++) {

@@ -19,6 +19,8 @@ export class GameListComponent implements OnInit, OnDestroy {
   gamesSub: Subscription;
   loggedUserEmail: string;
   private loggedEmailSub: Subscription;
+  activePlayers: string[] = [];
+  private activePlayersSub: Subscription;
 
   // aggiunto da qui
   private connectionId: string;
@@ -49,6 +51,9 @@ export class GameListComponent implements OnInit, OnDestroy {
     // });
     this.games = this.gamesService.games;
     this.gamesSub = this.gamesService.getGamesListener().subscribe(newGames => this.games = newGames);
+    this.activePlayers = this.usersService.activePlayers;
+    this.activePlayersSub = this.usersService.getActivePlayersListener()
+      .subscribe(newActivePlayers => this.activePlayers = newActivePlayers);
   }
 
   onStartBattle(game: string) {
@@ -61,5 +66,6 @@ export class GameListComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.gamesSub.unsubscribe();
     this.loggedEmailSub.unsubscribe();
+    this.activePlayersSub.unsubscribe();
   }
 }

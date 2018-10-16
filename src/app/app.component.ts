@@ -72,6 +72,9 @@ export class AppComponent implements OnInit {
         });
 
         this.connessione.socket.on('start battle', (players) => {
+          this.usersService.activePlayers = players.activePlayers;
+          // non invio la copia dell'oggetto perché contiene un array (che non verrebbe "duplicato"):
+          this.usersService.sendActivePlayers(players.activePlayers);
           if (players.nowPlaying.includes(this.loggedEmail)) {
             this.battleService.createBoards(players);
           }

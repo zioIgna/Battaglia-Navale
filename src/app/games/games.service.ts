@@ -1,14 +1,17 @@
 import { UsersService } from './../users/users.service';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { ConnectionService } from '../connection.service';
 import { Subscription, Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class GamesService {
+export class GamesService implements OnInit {
 
     games: string[] = [];  // ['Player1', 'Player2', 'Player3', 'ignaziocarbonaro@hotmail.com'];
     private gamesListener = new Subject<string[]>();
     private alreadyWaitingListener = new Subject<boolean>();
+    activePlayers: string[];
+    private activePlayersSub: Subscription;
+    // private activePlayersListener = new Subject<string[]>();
 
     constructor(private usersService: UsersService, private connessione: ConnectionService) { }
 
@@ -32,6 +35,16 @@ export class GamesService {
 
     getGamesListener() {
       return this.gamesListener.asObservable();
+    }
+
+    // sendActivePlayers(newActivePlayers) {
+    //   this.activePlayers = newActivePlayers;
+    //   this.activePlayersListener.next([...newActivePlayers]);
+    // }
+    ngOnInit() {
+      this.activePlayers = this.usersService.activePlayers;
+      this.activePlayersSub = this.usersService.getActivePlayersListener()
+        .subscribe(newActivePlayers => this.activePlayers = newActivePlayers);
     }
 
 }

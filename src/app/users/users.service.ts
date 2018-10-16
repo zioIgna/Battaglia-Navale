@@ -6,6 +6,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth-data.model';
+import { GamesService } from '../games/games.service';
 
 @Injectable({
     providedIn: 'root'
@@ -25,8 +26,15 @@ export class UsersService implements OnInit {
     private tokenTimer: any;
     private connectionId: string;
     loggedEmails = [];
+    activePlayers = [];
+    private activePlayersListener = new Subject<string[]>();
 
-    constructor(private connessione: ConnectionService, private http: HttpClient, private router: Router) { }
+    constructor(
+      private connessione: ConnectionService,
+      private http: HttpClient,
+      private router: Router,
+      // private gamesService: GamesService
+    ) { }
 
     getToken() {
         return this.token;
@@ -79,6 +87,14 @@ export class UsersService implements OnInit {
         return this.usersUpdated.asObservable();
     }
 
+    sendActivePlayers( activePlayers ) {
+      this.activePlayersListener.next(activePlayers);
+    }
+
+    getActivePlayersListener() {
+      return this.activePlayersListener.asObservable();
+    }
+
     createUser(email: string, password: string) {
         const authData: AuthData = {
             // id: null,
@@ -110,7 +126,7 @@ export class UsersService implements OnInit {
             password: password
         };
         this.http.post<{
-            token: string, expiresIn: number, userRole: string, userId: string, email: string
+            token: string, expiresIn: number, userRole: string, userId: string, email: string, activePlayers: string[]
         }>('http://localhost:3000/api/users/login', authData)
             .subscribe(response => {
                 console.log('questa è la risposta al login: ', response);
@@ -138,6 +154,7 @@ export class UsersService implements OnInit {
                     const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
                     console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
                     this.connessione.socket.emit('logged user', datiConnessione);
+                    this.sendActivePlayers(response.activePlayers);
                 }
             });
     }

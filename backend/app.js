@@ -10,6 +10,8 @@ const checkAuth = require('./middleware/check-auth');
 
 const app = express();
 
+let activePlayers = [];
+
 mongoose.connect('mongodb+srv://igna:PozKas6M2IC1JgR7@cluster0-3typv.mongodb.net/chat')
     .then(() => {
         console.log('Connected to database!');
@@ -165,7 +167,8 @@ app.post('/api/users/login', (req, res, next) => {
                 expiresIn: 3600,
                 userRole: fetchedUser.role,
                 userId: fetchedUser._id,
-                email: fetchedUser.email
+                email: fetchedUser.email,
+                activePlayers: activePlayers
             });
         })
         .catch(err => {
@@ -229,3 +232,4 @@ app.delete('/api/users/delete/:id', (req, res, next) => {
 
 
 module.exports = app;
+module.exports.players = activePlayers;
