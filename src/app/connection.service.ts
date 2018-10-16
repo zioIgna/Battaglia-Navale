@@ -8,6 +8,7 @@ import { Subject, Observable } from 'rxjs';
 })
 export class ConnectionService {
     socket = null;
+    binaryId = -1;
 
     // da qui inserito per prova di trasmissione id connessione
     private subject = new Subject<any>();

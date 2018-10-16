@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { BoardComponent } from './board/board.component';
 import { PlayerComponent } from './player/player.component';
 import { Subject } from 'rxjs';
+import { ConnectionService } from 'src/app/connection.service';
+import { UsersService } from 'src/app/users/users.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +17,7 @@ export class BattleService {
   playersNumber = 2;
   currPlayer = 0;
 
-  constructor() { }
+  constructor(private connection: ConnectionService, private usersService: UsersService, private router: Router) { }
 
   getBoards() {
     return [...this.boards];
@@ -24,7 +27,7 @@ export class BattleService {
     return this.boardsListener.asObservable();
   }
 
-  createBoards() {    // invocata da onInit al verificarsi di condizione: loggedPlayers === 2
+  createBoards(players) {
     for (let i = 0; i < this.playersNumber; i++) {
         const player = new PlayerComponent();
         player.id = i;
@@ -33,6 +36,9 @@ export class BattleService {
         board.tiles = this.setTiles();
         this.boards.push(board);
         this.boardsListener.next([...this.boards]);
+        this.usersService.getLoggedEmail() === players.nowPlaying[0] ? this.connection.binaryId = 0 : this.connection.binaryId = 1;
+        console.log('Questa è la binaryId:  ' + this.connection.binaryId);
+        this.router.navigate(['/battle']);
     }
   }
 
@@ -47,9 +53,12 @@ export class BattleService {
     return tiles;
   }
 
-  // startBattle() {
-  //   this.createBoards();
-  // }
+  startBattle(game) {
+    const players = {nowPlaying: [game, this.usersService.getLoggedEmail()]};
+    console.log('Questi sono i players passati: ' + players.nowPlaying);
+    this.connection.socket.emit('start battle', players);
+    // this.createBoards();
+  }
 
   getPosition(e: any) {}
 }

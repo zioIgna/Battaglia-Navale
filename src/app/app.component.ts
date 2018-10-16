@@ -4,6 +4,7 @@ import { UsersService } from './users/users.service';
 import { MessagesService } from './messages/messages.service';
 import { Subscription } from '../../node_modules/rxjs';
 import { GamesService } from './games/games.service';
+import { BattleService } from './games/battle/battle.service';
 
 @Component({
     selector: 'app-root',
@@ -18,7 +19,8 @@ export class AppComponent implements OnInit {
         private connessione: ConnectionService,
         private usersService: UsersService,
         private msgService: MessagesService,
-        private gamesService: GamesService
+        private gamesService: GamesService,
+        private battleService: BattleService
     ) { }
 
     ngOnInit() {
@@ -67,6 +69,12 @@ export class AppComponent implements OnInit {
 
         this.connessione.socket.on('new game', (newGames) => {
           this.gamesService.sendGames(newGames);
+        });
+
+        this.connessione.socket.on('start battle', (players) => {
+          if (players.nowPlaying.includes(this.loggedEmail)) {
+            this.battleService.createBoards(players);
+          }
         });
     }
 

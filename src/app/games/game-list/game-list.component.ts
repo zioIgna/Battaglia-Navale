@@ -51,9 +51,11 @@ export class GameListComponent implements OnInit, OnDestroy {
     this.gamesSub = this.gamesService.getGamesListener().subscribe(newGames => this.games = newGames);
   }
 
-  onStartBattle() {
-    this.battleService.createBoards();
-    this.router.navigate(['/battle']);
+  onStartBattle(game: string) {
+    this.battleService.startBattle(game);
+    console.log('Questo è il parametro game passato: ' + game);
+    // this.battleService.createBoards();
+    // this.router.navigate(['/battle']);
   }
 
   ngOnDestroy() {

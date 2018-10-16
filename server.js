@@ -112,4 +112,7 @@ io.on('connection', function (socket) {
       games.push(email);
       io.emit('new game', games);
     });
+    socket.on('start battle', function(players){
+      io.emit('start battle', players);
+    });
 });
