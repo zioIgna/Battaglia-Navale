@@ -53,8 +53,8 @@ const io = require("socket.io").listen(server);
 // let loggedIds = [];
 // let loggedEmails = [];
 let loggedUsers = [];
-let games = [];
-var activePlayers = app.players;
+let games = app.games;
+let activePlayers = app.players;
 // fin qui
 
 server.on("error", onError);
@@ -115,8 +115,10 @@ io.on('connection', function (socket) {
     });
     socket.on('start battle', function(players){
       // activePlayers.push(players.nowPlaying);
-      activePlayers.push(players.nowPlaying);
-      let updatedPlayers = {nowPlaying: players.nowPlaying, activePlayers: app.activePlayers};
+      activePlayers.push.apply(activePlayers, players.nowPlaying);
+      // console.log('nel server, questi sono gli activePlayers: ' + activePlayers);
+      const updatedPlayers = {nowPlaying: players.nowPlaying, activePlayers: activePlayers};
+      // console.log('nel server, questi sono gli updatedPlayers: ' + JSON.stringify(updatedPlayers));
       io.emit('start battle', updatedPlayers);
     });
 });

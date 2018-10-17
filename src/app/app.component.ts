@@ -68,13 +68,17 @@ export class AppComponent implements OnInit {
         });
 
         this.connessione.socket.on('new game', (newGames) => {
-          this.gamesService.sendGames(newGames);
+          // this.gamesService.sendGames(newGames);
+          this.usersService.games = newGames;
+          this.usersService.sendGames(newGames);
         });
 
         this.connessione.socket.on('start battle', (players) => {
           this.usersService.activePlayers = players.activePlayers;
           // non invio la copia dell'oggetto perché contiene un array (che non verrebbe "duplicato"):
           this.usersService.sendActivePlayers(players.activePlayers);
+          console.log('allo start battle, questi sono i Players: ' + JSON.stringify(players));
+          console.log('allo start battle, questi sono gli activePlayers: ' + players.activePlayers);
           if (players.nowPlaying.includes(this.loggedEmail)) {
             this.battleService.createBoards(players);
           }

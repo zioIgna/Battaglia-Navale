@@ -22,14 +22,14 @@ export class GamesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.connection.getConnection();
     this.loggedUserEmail = this.usersService.getLoggedEmail();
-    this.alreadyWaiting = this.gamesService.games.includes(this.loggedUserEmail);
+    this.alreadyWaiting = this.usersService.games.includes(this.loggedUserEmail);
     console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);
     this.loggedEmailSub = this.usersService.getLoggedEmailListener().subscribe(loggedUser => {
       this.loggedUserEmail = loggedUser;
-      this.alreadyWaiting = this.gamesService.games.includes(this.loggedUserEmail);
+      this.alreadyWaiting = this.usersService.games.includes(this.loggedUserEmail);
       console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);
     });
-    this.alreadyWaitingSub = this.gamesService.getAlreadyWaitingListener().subscribe(value => this.alreadyWaiting = value);
+    this.alreadyWaitingSub = this.usersService.getAlreadyWaitingListener().subscribe(value => this.alreadyWaiting = value);
   }
 
   onCreateGame() {
@@ -38,6 +38,7 @@ export class GamesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.loggedEmailSub.unsubscribe();
+    this.alreadyWaitingSub.unsubscribe();
   }
 
 }

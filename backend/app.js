@@ -11,6 +11,7 @@ const checkAuth = require('./middleware/check-auth');
 const app = express();
 
 let activePlayers = [];
+let games = [];
 
 mongoose.connect('mongodb+srv://igna:PozKas6M2IC1JgR7@cluster0-3typv.mongodb.net/chat')
     .then(() => {
@@ -168,7 +169,8 @@ app.post('/api/users/login', (req, res, next) => {
                 userRole: fetchedUser.role,
                 userId: fetchedUser._id,
                 email: fetchedUser.email,
-                activePlayers: activePlayers
+                activePlayers: activePlayers,
+                games: games
             });
         })
         .catch(err => {
@@ -233,3 +235,4 @@ app.delete('/api/users/delete/:id', (req, res, next) => {
 
 module.exports = app;
 module.exports.players = activePlayers;
+module.exports.games = games;
