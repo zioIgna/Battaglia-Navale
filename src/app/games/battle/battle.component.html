@@ -6,9 +6,10 @@
   <table>
     <tr *ngFor="let row of board.tiles; let j = index">
       <td *ngFor="let col of row; let k = index"
-      (click) = "getPosition($event)"
-      id="t{{i}}{{j}}{{k}}">
-        {{col.value}}
+        (click) = "onGetPosition($event)"
+        [class.show-ship]="binaryId == i && col.used"
+        id="t{{i}}{{j}}{{k}}" title={{onGetMyBattle()}}>
+          {{col.value}}
       </td>
     </tr>
   </table>

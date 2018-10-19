@@ -83,6 +83,19 @@ export class AppComponent implements OnInit {
             this.battleService.createBoards(players);
           }
         });
+
+        this.connessione.socket.on('new ship', (coordinates) => {
+          console.log('queste sono le coordinates passate dal server: ' + JSON.stringify(coordinates));
+          console.log('myBattle.includes(this.usersService.getLoggedEmail): '
+            + coordinates.myBattle.includes(this.usersService.getLoggedEmail));
+          console.log('typeof coordinates.myBattle: ' + typeof(coordinates.myBattle));
+          const myMail = this.usersService.getLoggedEmail();
+          if (coordinates.myBattle.includes(myMail)) {
+            console.log('riconosciuta la partita!');
+            this.battleService.addShip(coordinates.boardId, coordinates.row, coordinates.col,
+              coordinates.shipId, coordinates.size, coordinates.orientation);
+          }
+        });
     }
 
 

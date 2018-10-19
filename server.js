@@ -121,4 +121,8 @@ io.on('connection', function (socket) {
       // console.log('nel server, questi sono gli updatedPlayers: ' + JSON.stringify(updatedPlayers));
       io.emit('start battle', updatedPlayers);
     });
+    socket.on('new ship', function (coordinates) {
+      console.log('è stata posizionata una nave con queste coordinate: ' + JSON.stringify(coordinates));
+      io.emit('new ship', coordinates);
+    });
 });
