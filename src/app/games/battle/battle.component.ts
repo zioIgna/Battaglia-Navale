@@ -16,6 +16,9 @@ export class BattleComponent implements OnInit {
   boardsSub: Subscription;
   binaryId: number;
   binaryIdSub: Subscription;
+  positionedShips: number;
+  orientation: string;
+  orientationSub: Subscription;
 
   constructor(private battleService: BattleService, private connectionService: ConnectionService) {}
 
@@ -24,6 +27,9 @@ export class BattleComponent implements OnInit {
     this.boardsSub = this.battleService.getBoardsListener().subscribe(updatedBoards => this.boards = updatedBoards);
     this.binaryId = this.connectionService.binaryId;
     this.binaryIdSub = this.connectionService.getId().subscribe(newId => this.binaryId = newId);
+    this.positionedShips = this.battleService.positionedShips;
+    this.orientation = this.battleService.orientation;
+    this.orientationSub = this.battleService.getOrientationListener().subscribe(newOrientation => this.orientation = newOrientation);
   }
 
   onGetPosition(e: any) {
@@ -32,6 +38,14 @@ export class BattleComponent implements OnInit {
 
   onGetMyBattle() {
     return this.battleService.getMyBattle();
+  }
+
+  onSetHorizontal() {
+    this.battleService.setHorizontal();
+  }
+
+  onSetVertical() {
+    this.battleService.setVertical();
   }
 
 }

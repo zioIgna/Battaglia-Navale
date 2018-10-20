@@ -22,6 +22,7 @@ export class BattleService implements OnInit {
   hitsToWin = 0;
   myBattle: string[] = [];
   orientation = 'vertical';
+  private orientationListener = new Subject<string>();
   playersNumber = 2;
   positionedShips = 0;
   // private activePlayersListener = new Subject<string[]>();
@@ -39,12 +40,24 @@ export class BattleService implements OnInit {
     return this.boards;
   }
 
+  setBoards(newBoards: BoardComponent[]) {
+    this.boards = newBoards;
+  }
+
   getBoardsListener() {
     return this.boardsListener.asObservable();
   }
 
   sendBoardsListener(newBoards) {
     this.boardsListener.next(newBoards);
+  }
+
+  getOrientationListener() {
+    return this.orientationListener.asObservable();
+  }
+
+  sendOrientationListener(newOrientation) {
+    this.orientationListener.next(newOrientation);
   }
 
   // sendActivePlayers(newActivePlayers) {
@@ -169,7 +182,7 @@ export class BattleService implements OnInit {
               if (this.boards[this.currPlayer].player.score === this.hitsToWin) {
                 console.log('Giocatore ' + this.currPlayer + ', hai vinto!');
                 this.endGame = true;
-                this.connection.socket.emit('endGame');   // ANCORA DA IMPLEMENTARE!!!
+                this.connection.socket.emit('endGame', this.myBattle);   // ANCORA DA IMPLEMENTARE!!!
                 return;
               }
               this.connection.socket.emit('switch player', this.myBattle);
@@ -253,6 +266,16 @@ export class BattleService implements OnInit {
       this.boards[boardId].tiles[row][col].shipId = shipId;
       this.addShip(boardId, +row + 1, col, shipId, size - 1, orientation);
     }
+  }
+
+  setHorizontal() {
+    this.orientation = 'horizontal';
+    this.sendOrientationListener(this.orientation);
+  }
+
+  setVertical() {
+    this.orientation = 'vertical';
+    this.sendOrientationListener(this.orientation);
   }
 
   // checkNE(boardId: number, row: number, col: number, shipId: string) {

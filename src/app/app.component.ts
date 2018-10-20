@@ -123,9 +123,21 @@ export class AppComponent implements OnInit {
           const myMail = this.usersService.getLoggedEmail();
           if (myBattle.includes(myMail)) {
             this.battleService.currPlayer = (this.battleService.currPlayer + 1) % this.battleService.playersNumber;
-          console.log('l\' attuale giocatore è: ' + this.battleService.currPlayer);
-        }
-      });
+            console.log('l\' attuale giocatore è: ' + this.battleService.currPlayer);
+          }
+        });
+
+        this.connessione.socket.on('endGame', (myBattle) => {
+          const myMail = this.usersService.getLoggedEmail();
+          if (myBattle.includes(myMail)) {
+            this.battleService.endGame = true;
+            // this.loggedPlayers = 0;
+            this.battleService.hits = 0;
+            this.battleService.setBoards([]);
+            this.battleService.positionedShips = 0;
+          }
+          // aggiungere il punto al vincitore (e un reindirizzamento?)
+        });
     }
 
 

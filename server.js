@@ -134,6 +134,9 @@ io.on('connection', function (socket) {
     socket.on('miss', function(obj){
       socket.broadcast.emit('miss', obj);
     });
+    socket.on('endGame', function (myBattle) {
+      io.emit('endGame', myBattle);
+    });
     socket.on('switch player', function (myBattle) {
       socket.broadcast.emit('switch player', myBattle);
     });

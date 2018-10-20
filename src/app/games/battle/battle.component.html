@@ -1,6 +1,17 @@
-<p>
-  battle works!
-</p>
+<div>You are player {{binaryId}}</div>
+<div *ngIf="this.boards[binaryId].player.shipsToPlace.length">
+  <div *ngIf="positionedShips < 2">Scegli l'orientamento della prossima nave (verticale di default):
+      <button mat-raised-button color="primary"
+        (click)="onSetHorizontal()">
+        Orizzontale <i class="material-icons">arrow_forward</i>
+      </button><button mat-raised-button color="primary"
+        (click)="onSetVertical()">
+        Verticale<i class="material-icons">arrow_downward</i>
+      </button>
+      <div>L'orientamento attuale è: <b>{{orientation}}</b></div>
+      <div>La prossima nave da posizionare è: {{this.boards[binaryId].player.shipsToPlace[0].id}}</div>
+  </div>
+</div>
 <div *ngFor="let board of boards; let i = index">
   <p>Player: {{board.player.id}}</p>
   <table>
