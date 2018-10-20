@@ -96,6 +96,36 @@ export class AppComponent implements OnInit {
               coordinates.shipId, coordinates.size, coordinates.orientation);
           }
         });
+
+        this.connessione.socket.on('navy positioned', (myBattle) => {
+          const myMail = this.usersService.getLoggedEmail();
+          if (myBattle.includes(myMail)) {
+            this.battleService.positionedShips++;
+            console.log('Posizionate ' + this.battleService.positionedShips + ' flotte');
+          }
+        });
+
+        this.connessione.socket.on('hit', (obj) => {
+          const myMail = this.usersService.getLoggedEmail();
+          if (obj.myBattle.includes(myMail)) {
+            this.battleService.getBoards()[obj.ship.boardId].tiles[obj.ship.row][obj.ship.col].value = 'X';
+          }
+        });
+
+        this.connessione.socket.on('miss', (obj) => {
+          const myMail = this.usersService.getLoggedEmail();
+          if (obj.myBattle.includes(myMail)) {
+            this.battleService.getBoards()[obj.ship.boardId].tiles[obj.ship.row][obj.ship.col].value = 'M';
+          }
+        });
+
+        this.connessione.socket.on('switch player', (myBattle) => {
+          const myMail = this.usersService.getLoggedEmail();
+          if (myBattle.includes(myMail)) {
+            this.battleService.currPlayer = (this.battleService.currPlayer + 1) % this.battleService.playersNumber;
+          console.log('l\' attuale giocatore è: ' + this.battleService.currPlayer);
+        }
+      });
     }
 
 

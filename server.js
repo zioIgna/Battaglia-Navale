@@ -125,4 +125,16 @@ io.on('connection', function (socket) {
       console.log('è stata posizionata una nave con queste coordinate: ' + JSON.stringify(coordinates));
       io.emit('new ship', coordinates);
     });
+    socket.on('navy positioned', function(myBattle){
+      io.emit('navy positioned', myBattle);
+    });
+    socket.on('hit', function (obj) {
+      socket.broadcast.emit('hit', obj);
+    });
+    socket.on('miss', function(obj){
+      socket.broadcast.emit('miss', obj);
+    });
+    socket.on('switch player', function (myBattle) {
+      socket.broadcast.emit('switch player', myBattle);
+    });
 });

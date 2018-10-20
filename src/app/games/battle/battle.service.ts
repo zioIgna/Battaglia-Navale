@@ -35,7 +35,8 @@ export class BattleService implements OnInit {
   }
 
   getBoards() {
-    return [...this.boards];
+    // return [...this.boards];
+    return this.boards;
   }
 
   getBoardsListener() {
@@ -116,14 +117,8 @@ export class BattleService implements OnInit {
       if (boardId === this.connection.binaryId && this.boards[this.connection.binaryId].player.shipsToPlace.length) {
         console.log('Questi sono i parametri passati a checkPositioning: ', boardId, ' ', row, ' ', col, ' ',
         this.boards[this.connection.binaryId].player.shipsToPlace[0].size, ' ', typeof(row));
-        if (this.checkPositioning(
-          boardId,
-          row,
-          col,
-          this.boards[this.connection.binaryId].player.shipsToPlace[0].size,
-          this.boards[this.connection.binaryId].player.shipsToPlace[0].id,
-          this.orientation)
-          ) {
+        if (this.checkPositioning(boardId, row, col, this.boards[this.connection.binaryId].player.shipsToPlace[0].size,
+          this.boards[this.connection.binaryId].player.shipsToPlace[0].id, this.orientation)) {
           const coordinates = {
             myBattle: this.myBattle,  // aggiunto questo campo per permettere di verificare a chi è indirizzato il segnale
             boardId: boardId,
@@ -150,9 +145,50 @@ export class BattleService implements OnInit {
         if (!this.boards[this.connection.binaryId].player.shipsToPlace.length) {
           this.connection.socket.emit('navy positioned', this.myBattle);
         }
+      } else if (!this.boards[this.connection.binaryId].player.shipsToPlace.length) {
+        console.log('Attendi che anche l\'altro giocatore abbia posizionato le sue navi');
+      } else {
+        console.log('Devi posizionare le navi sulla tua griglia, che è l\'altra...');
       }
     } else {  // si comincia a sparare:
-
+      if (this.currPlayer === this.connection.binaryId) {
+        if (boardId !== this.currPlayer) {  // sto sparando nella griglia dell'avversario
+          if (this.boards[boardId].tiles[row][col].value === 'X' || this.boards[boardId].tiles[row][col].value === 'M') {
+            console.log('Hai già sparato su questa casella, spara di nuovo!');
+          } else {
+            if (this.boards[boardId].tiles[row][col].used === true) { // colpita una nave
+              this.boards[boardId].tiles[row][col].value = 'X';
+              ship['shipId'] = this.boards[boardId].tiles[row][col].shipId;
+              const hitShip = this.boards[boardId].tiles[row][col].shipId;
+              const hitShipIndex = this.boards[this.currPlayer].player.opponentShips.findIndex((item) => item.id === hitShip);
+              this.connection.socket.emit('hit', {myBattle: this.myBattle, ship: ship});
+              if (--this.boards[this.currPlayer].player.opponentShips[hitShipIndex].hits === 0) {
+                console.log('Hai affondato la nave ' + hitShip);
+              }
+              this.boards[this.currPlayer].player.score++;
+              if (this.boards[this.currPlayer].player.score === this.hitsToWin) {
+                console.log('Giocatore ' + this.currPlayer + ', hai vinto!');
+                this.endGame = true;
+                this.connection.socket.emit('endGame');   // ANCORA DA IMPLEMENTARE!!!
+                return;
+              }
+              this.connection.socket.emit('switch player', this.myBattle);
+              this.currPlayer = (this.currPlayer + 1) % this.playersNumber;
+              console.log('l\' attuale giocatore è: ' + this.currPlayer);
+            } else if (this.boards[boardId].tiles[row][col].used === false) { // nessuna nave posizionata sulla cella
+              this.boards[boardId].tiles[row][col].value = 'M';
+              this.connection.socket.emit('miss', {myBattle: this.myBattle, ship: ship});
+              this.connection.socket.emit('switch player', this.myBattle);
+              this.currPlayer = (this.currPlayer + 1) % this.playersNumber;
+              console.log('l\' attuale giocatore è: ' + this.currPlayer);
+            }
+          }
+        } else {  // sto sparando nella mia griglia: errore
+          console.log('Devi sparare nell\'altra griglia!');
+        }
+      } else {
+        console.log('It\'s not your turn to play');     // il giocatore che ha selezionato la casella non ha rispettato il turno
+      }
     }
 
   }
@@ -207,7 +243,7 @@ export class BattleService implements OnInit {
     if (size === 1) {
       this.boards[boardId].tiles[row][col].used = true;
       this.boards[boardId].tiles[row][col].shipId = shipId;
-      this.sendBoardsListener(this.boards);
+      // this.sendBoardsListener(this.boards);  // perché non serve questo comando?
     } else if (orientation === 'horizontal') {
       this.boards[boardId].tiles[row][col].used = true;
       this.boards[boardId].tiles[row][col].shipId = shipId;
