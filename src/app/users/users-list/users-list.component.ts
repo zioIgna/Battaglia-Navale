@@ -14,9 +14,9 @@ export class UsersListComponent implements OnInit, OnDestroy {
     usersSub: Subscription;
     isAdmin = false;
     private adminSub: Subscription;
-    private loggedUserId: string;
+    loggedUserId: string;
     private loggedUserIdSub: Subscription;
-    private loggedUserEmail: string;
+    loggedUserEmail: string;
     private loggedEmailSub: Subscription;
 
     constructor(private usersService: UsersService) { }

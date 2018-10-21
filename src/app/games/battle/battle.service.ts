@@ -73,16 +73,22 @@ export class BattleService implements OnInit {
     for (let i = 0; i < this.playersNumber; i++) {
         const player = new PlayerComponent();
         player.id = i;
+        player.score = 0;
         const board = new BoardComponent();
         board.player = player;
+        console.log('lo score di questo player è: ' + player.score);
         board.tiles = this.setTiles();
         this.boards.push(board);
-        this.boardsListener.next([...this.boards]);
-        this.usersService.getLoggedEmail() === players.nowPlaying[0] ? this.connection.binaryId = 0 : this.connection.binaryId = 1;
-        this.connection.sendId(this.connection.binaryId);
-        console.log('Questa è la binaryId:  ' + this.connection.binaryId);
-        this.router.navigate(['/battle']);
     }
+    this.boardsListener.next([...this.boards]);
+    this.usersService.getLoggedEmail() === players.nowPlaying[0] ? this.connection.binaryId = 0 : this.connection.binaryId = 1;
+    this.connection.sendId(this.connection.binaryId);
+    console.log('Questa è la binaryId:  ' + this.connection.binaryId);
+    this.router.navigate(['/battle']);
+    for (const ship of this.boards[this.connection.binaryId].player.shipsToPlace) {
+      this.hitsToWin += ship.size;
+    }
+    console.log('hitsToWin = ' + this.hitsToWin);
   }
 
   setTiles() {
@@ -179,6 +185,7 @@ export class BattleService implements OnInit {
                 console.log('Hai affondato la nave ' + hitShip);
               }
               this.boards[this.currPlayer].player.score++;
+              console.log('Il punteggio attuale è: ' + this.boards[this.currPlayer].player.score);
               if (this.boards[this.currPlayer].player.score === this.hitsToWin) {
                 console.log('Giocatore ' + this.currPlayer + ', hai vinto!');
                 this.endGame = true;
