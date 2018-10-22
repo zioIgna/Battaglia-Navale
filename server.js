@@ -135,7 +135,21 @@ io.on('connection', function (socket) {
       socket.broadcast.emit('miss', obj);
     });
     socket.on('endGame', function (myBattle) {
-      io.emit('endGame', myBattle);
+      let myBattleCopy = [...myBattle];
+      const lunghezza = myBattleCopy.length;
+      for (let i = 0; i < lunghezza; i++) {
+        let val = myBattleCopy.pop();
+        let index = activePlayers.indexOf(val);
+        if (index > -1) {
+          activePlayers.splice(index, 1);
+        };
+      };
+      console.log('ora questi sono gli activePlayers: ' + activePlayers);
+      let index = games.indexOf(myBattle[0]);
+      games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
+      console.log('ora questi sono i games: ' + games);
+      const updatedPlayers = { myBattle: myBattle, activePlayers: activePlayers, games: games};
+      io.emit('endGame', updatedPlayers);
     });
     socket.on('switch player', function (myBattle) {
       socket.broadcast.emit('switch player', myBattle);

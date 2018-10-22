@@ -18,6 +18,7 @@ export class BattleService implements OnInit {
   boardSize = 10;
   currPlayer = 0;
   endGame = false;
+  private endGameListener = new Subject<boolean>();
   hits = 0;
   hitsToWin = 0;
   myBattle: string[] = [];
@@ -60,6 +61,14 @@ export class BattleService implements OnInit {
     this.orientationListener.next(newOrientation);
   }
 
+  getEndGameListener() {
+    return this.endGameListener.asObservable();
+  }
+
+  sendEndGameListener(newVal) {
+    this.endGameListener.next(newVal);
+  }
+
   // sendActivePlayers(newActivePlayers) {
   //   this.activePlayersListener.next(newActivePlayers);
   // }
@@ -69,11 +78,12 @@ export class BattleService implements OnInit {
   // }
 
   createBoards(players) {
+    // il primo nell'array myBattle è quello che aveva "dato disponibilità" a giocare, il secondo è quello che "si è unito":
     this.myBattle = [...players.nowPlaying];
     for (let i = 0; i < this.playersNumber; i++) {
         const player = new PlayerComponent();
         player.id = i;
-        player.score = 0;
+        // player.score = 0;
         const board = new BoardComponent();
         board.player = player;
         console.log('lo score di questo player è: ' + player.score);
@@ -170,13 +180,13 @@ export class BattleService implements OnInit {
         console.log('Devi posizionare le navi sulla tua griglia, che è l\'altra...');
       }
     } else {  // si comincia a sparare:
-      if (this.currPlayer === this.connection.binaryId) {
+      if (this.currPlayer === this.connection.binaryId) { // è il mio turno di sparare
         if (boardId !== this.currPlayer) {  // sto sparando nella griglia dell'avversario
           if (this.boards[boardId].tiles[row][col].value === 'X' || this.boards[boardId].tiles[row][col].value === 'M') {
             console.log('Hai già sparato su questa casella, spara di nuovo!');
           } else {
             if (this.boards[boardId].tiles[row][col].used === true) { // colpita una nave
-              this.boards[boardId].tiles[row][col].value = 'X';
+              this.boards[boardId].tiles[row][col].value = 'X';   // forse questo non serve perché è anche nel metodo di on('hit',...)
               ship['shipId'] = this.boards[boardId].tiles[row][col].shipId;
               const hitShip = this.boards[boardId].tiles[row][col].shipId;
               const hitShipIndex = this.boards[this.currPlayer].player.opponentShips.findIndex((item) => item.id === hitShip);
@@ -188,7 +198,7 @@ export class BattleService implements OnInit {
               console.log('Il punteggio attuale è: ' + this.boards[this.currPlayer].player.score);
               if (this.boards[this.currPlayer].player.score === this.hitsToWin) {
                 console.log('Giocatore ' + this.currPlayer + ', hai vinto!');
-                this.endGame = true;
+                // this.endGame = true; // non serve inserire qui perché lo fa già il socket
                 this.connection.socket.emit('endGame', this.myBattle);   // ANCORA DA IMPLEMENTARE!!!
                 return;
               }

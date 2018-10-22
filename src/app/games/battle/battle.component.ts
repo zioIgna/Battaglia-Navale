@@ -16,9 +16,12 @@ export class BattleComponent implements OnInit {
   boardsSub: Subscription;
   binaryId: number;
   binaryIdSub: Subscription;
-  positionedShips: number;
+  currPlayer: number;
+  endGame: boolean;
+  endGameSub: Subscription;
   orientation: string;
   orientationSub: Subscription;
+  positionedShips: number;
 
   constructor(private battleService: BattleService, private connectionService: ConnectionService) {}
 
@@ -27,6 +30,9 @@ export class BattleComponent implements OnInit {
     this.boardsSub = this.battleService.getBoardsListener().subscribe(updatedBoards => this.boards = updatedBoards);
     this.binaryId = this.connectionService.binaryId;
     this.binaryIdSub = this.connectionService.getId().subscribe(newId => this.binaryId = newId);
+    this.currPlayer = this.battleService.currPlayer;
+    this.endGame = this.battleService.endGame;
+    this.endGameSub = this.battleService.getEndGameListener().subscribe( newValue => this.endGame = newValue);
     this.positionedShips = this.battleService.positionedShips;
     this.orientation = this.battleService.orientation;
     this.orientationSub = this.battleService.getOrientationListener().subscribe(newOrientation => this.orientation = newOrientation);

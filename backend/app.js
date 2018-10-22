@@ -225,6 +225,8 @@ app.put('/api/users/switch/:id', (req, res, next) => {
     // })
 })
 
+app.put('/api/users/upgrade/:id', (req, res, next) => {});
+
 app.delete('/api/users/delete/:id', (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(result => {
         console.log(result);

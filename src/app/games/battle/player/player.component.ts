@@ -11,7 +11,7 @@ export class PlayerComponent {
 
   user: User; // forse è utile questo campo o forse meglio indicare solo la mail
   id: number;
-  score: 0;
+  score = 0;
   shipsToPlace = [];
   opponentShips = [];
 
@@ -71,8 +71,11 @@ export class PlayerComponent {
 
   constructor() {
     // manca l'implementazione di id = idPassato
-    this.shipsToPlace.push(this.Cacciatorpediniere01, this.Cacciatorpediniere02, this.Cacciatorpediniere03, this.Cacciatorpediniere04,
-    this.Sottomarino01, this.Sottomarino02, this.Corazzata01, this.Corazzata02, this.Portaerei);
+    this.shipsToPlace.push(this.Cacciatorpediniere01
+      // , this.Cacciatorpediniere02,
+      // this.Cacciatorpediniere03, this.Cacciatorpediniere04,
+      // this.Sottomarino01, this.Sottomarino02, this.Corazzata01, this.Corazzata02, this.Portaerei
+      );
   }
 
   setId(newId) {

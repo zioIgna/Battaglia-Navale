@@ -127,16 +127,21 @@ export class AppComponent implements OnInit {
           }
         });
 
-        this.connessione.socket.on('endGame', (myBattle) => {
+        this.connessione.socket.on('endGame', (updatedPlayers) => {
           const myMail = this.usersService.getLoggedEmail();
-          if (myBattle.includes(myMail)) {
+          if (updatedPlayers.myBattle.includes(myMail)) {
             this.battleService.endGame = true;
             // this.loggedPlayers = 0;
             this.battleService.hits = 0;
             this.battleService.setBoards([]);
             this.battleService.positionedShips = 0;
+            this.battleService.sendEndGameListener(true);
           }
-          // aggiungere il punto al vincitore (e un reindirizzamento?)
+          this.usersService.activePlayers = updatedPlayers.activePlayers;
+          this.usersService.sendActivePlayers(updatedPlayers.activePlayers);
+          this.usersService.games = updatedPlayers.games;
+          this.usersService.sendGames(updatedPlayers.games);
+          // non aggiungere un reindirizzamento (né il punto al vincitore perché viene dato direttamente nel metodo getPosition
         });
     }
 
