@@ -1,4 +1,7 @@
 <div class="mat-subheading-2">You are player {{binaryId}}</div>
+<!-- <div>Stringified id: {{stringifiedBinaryId}}</div>
+<div>EndGame: {{endGame}}</div> -->
+<div class="mat-subheading-2" *ngIf="!endGame">E' il turno del giocatore <b>{{currPlayer}}</b></div>
 <div *ngIf="!endGame; else gameOver">
   <div class="mat-subheading-2" *ngIf="this.boards[binaryId].player.shipsToPlace.length">
     <div *ngIf="positionedShips < 2">Scegli l'orientamento della prossima nave (verticale di default):
@@ -31,6 +34,13 @@
 </div>
 
 <ng-template #gameOver>
-  <div class="mat-subheading-2">Game Over!</div>
-  <div class="mat-subheading-1">The winner is: <b>player {{currPlayer}}</b></div>
+  <div *ngIf="!playerDisconnected; else unexpectedEnd">
+    <div class="mat-subheading-2">Game Over!</div>
+    <div class="mat-subheading-1">The winner is: <b>player {{currPlayer}}</b></div>
+  </div>
+</ng-template>
+
+<ng-template #unexpectedEnd>
+  <div class="mat-subheading-2">Your opponent just disconnected!</div>
+  <div class="mat-subheading-2">No one wins</div>
 </ng-template>

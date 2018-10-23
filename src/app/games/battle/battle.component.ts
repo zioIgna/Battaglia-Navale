@@ -17,11 +17,15 @@ export class BattleComponent implements OnInit {
   binaryId: number;
   binaryIdSub: Subscription;
   currPlayer: number;
+  currPlayerSub: Subscription;
   endGame: boolean;
   endGameSub: Subscription;
   orientation: string;
   orientationSub: Subscription;
+  playerDisconnected: boolean;
+  playerDisconnectedSub: Subscription;
   positionedShips: number;
+  stringifiedBinaryId: string;
 
   constructor(private battleService: BattleService, private connectionService: ConnectionService) {}
 
@@ -29,13 +33,19 @@ export class BattleComponent implements OnInit {
     this.boards = this.battleService.getBoards();
     this.boardsSub = this.battleService.getBoardsListener().subscribe(updatedBoards => this.boards = updatedBoards);
     this.binaryId = this.connectionService.binaryId;
-    this.binaryIdSub = this.connectionService.getId().subscribe(newId => this.binaryId = newId);
+    this.binaryIdSub = this.connectionService.getId().subscribe(newId => {
+      this.binaryId = newId.myId;
+      this.stringifiedBinaryId = JSON.stringify(this.binaryId);
+    });
     this.currPlayer = this.battleService.currPlayer;
+    this.currPlayerSub = this.battleService.getCurrPlayerListener().subscribe(newVal => this.currPlayer = newVal);
     this.endGame = this.battleService.endGame;
     this.endGameSub = this.battleService.getEndGameListener().subscribe( newValue => this.endGame = newValue);
     this.positionedShips = this.battleService.positionedShips;
     this.orientation = this.battleService.orientation;
     this.orientationSub = this.battleService.getOrientationListener().subscribe(newOrientation => this.orientation = newOrientation);
+    this.playerDisconnected = this.battleService.playerDisconnected;
+    this.playerDisconnectedSub = this.battleService.getPlayerDisconnectedListener().subscribe(newVal => this.playerDisconnected = newVal);
   }
 
   onGetPosition(e: any) {

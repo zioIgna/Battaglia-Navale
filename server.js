@@ -52,7 +52,7 @@ const server = http.Server(app);    //ho cambiato il metodo da "createServer(app
 const io = require("socket.io").listen(server);
 // let loggedIds = [];
 // let loggedEmails = [];
-let loggedUsers = [];
+let loggedUsers = []; // contiene oggetti così formati: {email: ..., connectionId: ...}
 let games = app.games;
 let activePlayers = app.players;
 // fin qui
@@ -66,6 +66,7 @@ server.listen(port, function () {
 
 io.on('connection', function (socket) {
     const myId = socket.id; // aggiunto per implementare un collegamento utente-connessione
+    let myServerBattle;
     console.log("Socket connected: " + myId);   // aggiunto per implementare un collegamento utente-connessione
     console.log("USER CONNECTED...");
     socket.on('logged user', function (datiConnessione){
@@ -75,8 +76,27 @@ io.on('connection', function (socket) {
         io.emit('logged user', loggedUsers);
     });
     socket.on('disconnect', function () {
-        // loggedUsers.pop(loggedUsers.find(element => element.connectionId === myId));
         loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
+        if (myServerBattle) {  // nel caso in cui un utente si disconnetta DURANTE una partita
+          // io.emit('disconnectionEndGame', myServerBattle);
+          let myBattleCopy = [...myServerBattle];
+          const lunghezza = myBattleCopy.length;
+          for (let i = 0; i < lunghezza; i++) {
+            let val = myBattleCopy.pop();
+            let index = activePlayers.indexOf(val);
+            if (index > -1) {
+              activePlayers.splice(index, 1);
+            };
+          };
+          console.log('ora questi sono gli activePlayers: ' + activePlayers);
+          console.log('e questa è myServerBattle: ' + myServerBattle);
+          // let index = games.indexOf(myServerBattle[0]);
+          // games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
+          console.log('ora questi sono i games: ' + games);
+          const updatedPlayers = { myBattle: myServerBattle, activePlayers: activePlayers, games: games, playerDisconnected: true};
+          io.emit('endGame', updatedPlayers);
+        };
+        // myServerBattle = undefined;
         io.emit('logged user', loggedUsers);
         console.log('user disconnected');
     });
@@ -116,10 +136,17 @@ io.on('connection', function (socket) {
     socket.on('start battle', function(players){
       // activePlayers.push(players.nowPlaying);
       activePlayers.push.apply(activePlayers, players.nowPlaying);
+      myServerBattle = players.nowPlaying;
+      console.log('ora questa è myServerBattle: ' + myServerBattle);
       // console.log('nel server, questi sono gli activePlayers: ' + activePlayers);
-      const updatedPlayers = {nowPlaying: players.nowPlaying, activePlayers: activePlayers};
+      const newCurrPlayer = Math.floor(Math.random() * 2);
+      const updatedPlayers = {nowPlaying: players.nowPlaying, activePlayers: activePlayers, currPlayer: newCurrPlayer};
       // console.log('nel server, questi sono gli updatedPlayers: ' + JSON.stringify(updatedPlayers));
       io.emit('start battle', updatedPlayers);
+    });
+    socket.on('push myServerBattle', function(myBattle){
+      myServerBattle = myBattle;
+      console.log('ho appena pushato ' + myBattle + ' in myServerBattle: ' + myServerBattle);
     });
     socket.on('new ship', function (coordinates) {
       console.log('è stata posizionata una nave con queste coordinate: ' + JSON.stringify(coordinates));
@@ -136,6 +163,7 @@ io.on('connection', function (socket) {
     });
     socket.on('endGame', function (myBattle) {
       let myBattleCopy = [...myBattle];
+      myServerBattle = undefined;
       const lunghezza = myBattleCopy.length;
       for (let i = 0; i < lunghezza; i++) {
         let val = myBattleCopy.pop();

@@ -80,6 +80,12 @@ export class AppComponent implements OnInit {
           console.log('allo start battle, questi sono i Players: ' + JSON.stringify(players));
           console.log('allo start battle, questi sono gli activePlayers: ' + players.activePlayers);
           if (players.nowPlaying.includes(this.loggedEmail)) {
+            this.battleService.playerDisconnected = false;
+            this.battleService.sendPlayerDisconnectedListener(false);
+            this.battleService.endGame = false;
+            this.battleService.sendEndGameListener(false);
+            this.battleService.currPlayer = players.currPlayer; // aggiungere sottoscrizione!!! -> forse non serve
+            this.connessione.socket.emit('push myServerBattle', players.nowPlaying);
             this.battleService.createBoards(players);
           }
         });
@@ -123,6 +129,7 @@ export class AppComponent implements OnInit {
           const myMail = this.usersService.getLoggedEmail();
           if (myBattle.includes(myMail)) {
             this.battleService.currPlayer = (this.battleService.currPlayer + 1) % this.battleService.playersNumber;
+            this.battleService.sendCurrPlayerListener(this.battleService.currPlayer);
             console.log('l\' attuale giocatore è: ' + this.battleService.currPlayer);
           }
         });
@@ -133,15 +140,28 @@ export class AppComponent implements OnInit {
             this.battleService.endGame = true;
             // this.loggedPlayers = 0;
             this.battleService.hits = 0;
+            this.battleService.hitsToWin = 0;
             this.battleService.setBoards([]);
             this.battleService.positionedShips = 0;
             this.battleService.sendEndGameListener(true);
+            this.battleService.myBattle = []; // è giusto "azzerare" questo valore?
+            if (updatedPlayers.playerDisconnected) {
+              this.battleService.playerDisconnected = updatedPlayers.playerDisconnected;
+              this.battleService.sendPlayerDisconnectedListener(updatedPlayers.playerDisconnected);
+            }
           }
           this.usersService.activePlayers = updatedPlayers.activePlayers;
           this.usersService.sendActivePlayers(updatedPlayers.activePlayers);
           this.usersService.games = updatedPlayers.games;
           this.usersService.sendGames(updatedPlayers.games);
           // non aggiungere un reindirizzamento (né il punto al vincitore perché viene dato direttamente nel metodo getPosition
+        });
+
+        this.connessione.socket.on('disconnectionEndGame', (disconnectedEmail) => { // non utilizzata
+          const myMail = this.usersService.getLoggedEmail();
+          if (myMail === disconnectedEmail) {
+            this.connessione.socket.emit('endGame', [disconnectedEmail]);
+          }
         });
     }
 

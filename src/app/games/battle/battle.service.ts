@@ -17,6 +17,8 @@ export class BattleService implements OnInit {
   private boardsListener = new Subject<BoardComponent[]>();
   boardSize = 10;
   currPlayer = 0;
+  private currPlayerListener = new Subject<number>();
+  // currPlayerSub: Subscription;
   endGame = false;
   private endGameListener = new Subject<boolean>();
   hits = 0;
@@ -25,6 +27,8 @@ export class BattleService implements OnInit {
   orientation = 'vertical';
   private orientationListener = new Subject<string>();
   playersNumber = 2;
+  playerDisconnected = false;
+  private playerDisconnectedListener = new Subject<boolean>();
   positionedShips = 0;
   // private activePlayersListener = new Subject<string[]>();
 
@@ -67,6 +71,22 @@ export class BattleService implements OnInit {
 
   sendEndGameListener(newVal) {
     this.endGameListener.next(newVal);
+  }
+
+  getPlayerDisconnectedListener() {
+    return this.playerDisconnectedListener.asObservable();
+  }
+
+  sendPlayerDisconnectedListener(newVal) {
+    this.playerDisconnectedListener.next(newVal);
+  }
+
+  getCurrPlayerListener() {
+    return this.currPlayerListener.asObservable();
+  }
+
+  sendCurrPlayerListener(newVal) {
+    this.currPlayerListener.next(newVal);
   }
 
   // sendActivePlayers(newActivePlayers) {
@@ -204,6 +224,7 @@ export class BattleService implements OnInit {
               }
               this.connection.socket.emit('switch player', this.myBattle);
               this.currPlayer = (this.currPlayer + 1) % this.playersNumber;
+              this.sendCurrPlayerListener(this.currPlayer);
               console.log('l\' attuale giocatore è: ' + this.currPlayer);
             } else if (this.boards[boardId].tiles[row][col].used === false) { // nessuna nave posizionata sulla cella
               this.boards[boardId].tiles[row][col].value = 'M';
