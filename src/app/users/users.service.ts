@@ -75,6 +75,10 @@ export class UsersService implements OnInit {
         return this.connectionId;
     }
 
+    getLocalUsers() {
+      return this.users;
+    }
+
     getUsers() {
         // return this.users;
         this.http.get<{ note: string, users: User[] }>('http://localhost:3000/api/users')

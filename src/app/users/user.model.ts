@@ -4,4 +4,5 @@ export interface User {
     password: string;
     ruolo: string;
     score: number;
+    battlesCount: number;
 }

@@ -108,7 +108,8 @@ app.post('/api/users/signup', (req, res, next) => {
                 email: req.body.email,
                 password: hash,
                 role: 'basic',
-                score: 0
+                score: 0,
+                battlesCount: 0
             });
             user.save()
                 .then((savedData) =>
@@ -225,7 +226,37 @@ app.put('/api/users/switch/:id', (req, res, next) => {
     // })
 })
 
-app.put('/api/users/upgrade/:id', (req, res, next) => {});
+app.put('/api/users/upgradeBattles/:id', (req, res, next) => {  // gestire l'incremento di partite giocate e vittorie con unico metodo
+  newBattlesCount = req.body.battlesCount + 1;
+  User.updateOne({ _id: req.params.id }, {$set: {battlesCount: newBattlesCount}}), (err, raw) => {
+    if (err) {
+        return res.status(400).json({ message: 'User\'s battles update failed', esito: err });
+    }
+    console.log('Msg da backend: Battles Update riuscito');
+    return res.status(200).json({ message: 'Battles Update successful', esito: raw });
+  }
+}).then(result => {
+  console.log('risultato dello update: ', result);
+}).catch(err => {
+  console.log('problemi nello update user: ', err);
+});
+
+app.put('/api/users/upgradeScore/:id', (req, res, next) => {
+  newVictoriesCount = req.body.score + 1;
+  User.updateOne({ _id: req.params.id }, {$set: {score: newVictoriesCount}}), (err, raw) => {
+    if (err) {
+      return res.status(400).json( { message: 'User\'s score update failed', esito: err});
+    }
+    console.log('Msg da backend: Score Update riuscito');
+    return res.status(200).json({ message: 'Score Update successful', esito: raw});
+  }
+}).then(result => {
+  console.log('risultato dello update: ', result);
+}).catch(err => {
+  console.log('problemi nello update user: ', err);
+});
+
+app.put('/api/users/fights/:id', (req, res, next) => {}); // forse non serve questo metodo
 
 app.delete('/api/users/delete/:id', (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(result => {

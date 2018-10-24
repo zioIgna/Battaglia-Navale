@@ -7,6 +7,7 @@
         </mat-expansion-panel-header>
         <p>Ruolo: <b>{{user.ruolo}}</b></p>
         <p>Partite vinte: <b>{{user.score}}</b></p>
+        <!-- <p>Partite giocate: <b>{{user.battlesCount}}</b></p> -->
         <!-- <p>User id: <b>{{user._id}}</b></p> -->
         <mat-action-row>
             <button mat-button color="primary" (click)="onSwitch(user._id, user.ruolo)" *ngIf="isAdmin && user._id !== loggedUserId"><i class="material-icons">swap_horizontal_circle</i> SwitchRole</button>

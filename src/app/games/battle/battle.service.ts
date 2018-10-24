@@ -5,6 +5,8 @@ import { Subject, Subscription } from 'rxjs';
 import { ConnectionService } from 'src/app/connection.service';
 import { UsersService } from 'src/app/users/users.service';
 import { Router } from '@angular/router';
+import { element } from 'protractor';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +34,12 @@ export class BattleService implements OnInit {
   positionedShips = 0;
   // private activePlayersListener = new Subject<string[]>();
 
-  constructor(private connection: ConnectionService, private usersService: UsersService, private router: Router) { }
+  constructor(
+    private connection: ConnectionService,
+    private usersService: UsersService,
+    private http: HttpClient,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.activePlayers = this.usersService.activePlayers;
@@ -219,8 +226,8 @@ export class BattleService implements OnInit {
               if (this.boards[this.currPlayer].player.score === this.hitsToWin) {
                 console.log('Giocatore ' + this.currPlayer + ', hai vinto!');
                 // this.endGame = true; // non serve inserire qui perché lo fa già il socket
-                this.connection.socket.emit('endGame', this.myBattle);   // ANCORA DA IMPLEMENTARE!!!
-                return;
+                this.connection.socket.emit('endGame', this.myBattle);
+                return;   // questo return non serve
               }
               this.connection.socket.emit('switch player', this.myBattle);
               this.currPlayer = (this.currPlayer + 1) % this.playersNumber;
@@ -314,6 +321,22 @@ export class BattleService implements OnInit {
   setVertical() {
     this.orientation = 'vertical';
     this.sendOrientationListener(this.orientation);
+  }
+
+  sendBattleResult (players: string[], winner: string) {
+    const localUsers = this.usersService.getLocalUsers();
+    const updatePlayers = localUsers.filter(val => players.includes(val.email));
+    for (const elem of updatePlayers) {
+      this.http.put<{
+        message: string,
+        esito: object
+      }>('http://localhost:3000/api/users/upgradeBattles/' + elem._id, elem.battlesCount)
+        .subscribe((response) => {
+          console.log('Msg frontend: user\'s battlesCount upgraded', response);
+          this.connection.socket.emit('user updated', { message: 'user\'s battlesCount upgraded' });
+        },
+        (err) => {});
+    }
   }
 
   // checkNE(boardId: number, row: number, col: number, shipId: string) {
