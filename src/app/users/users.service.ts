@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth-data.model';
 import { GamesService } from '../games/games.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -81,7 +82,24 @@ export class UsersService implements OnInit {
 
     getUsers() {
         // return this.users;
-        this.http.get<{ note: string, users: User[] }>('http://localhost:3000/api/users')
+        this.http.get<{ note: string, users: any }>('http://localhost:3000/api/users')
+        // aggiunta la pipe (fino a riga 102) per trasformare gli oggetti restituiti secondo il modello
+        // di User del frontend, mantendoli observable:
+            .pipe(map((usersData) => {
+              return {
+                note: usersData.note,
+                users: usersData.users.map(user => {
+                  return {
+                    _id: user._id,
+                    email: user.email,
+                    password: '',
+                    ruolo: user.role,
+                    score: user.score,
+                    battlesCount: user.battlesCount
+                  };
+                })
+              };
+            }))
             .subscribe((usersData) => {
                 console.log(usersData.note);
                 console.log('questi sono i nuovi users', usersData.users);

@@ -1,7 +1,7 @@
 <div class="mat-subheading-2">You are player {{binaryId}}</div>
 <!-- <div>Stringified id: {{stringifiedBinaryId}}</div>
 <div>EndGame: {{endGame}}</div> -->
-<div class="mat-subheading-2" *ngIf="!endGame">E' il turno del giocatore <b>{{currPlayer}}</b></div>
+<div class="mat-subheading-2" *ngIf="!endGame && positionedShips == 2">E' il turno del giocatore <b>{{currPlayer}}</b></div>
 <div *ngIf="!endGame; else gameOver">
   <div class="mat-subheading-2" *ngIf="this.boards[binaryId].player.shipsToPlace.length">
     <div *ngIf="positionedShips < 2">Scegli l'orientamento della prossima nave (verticale di default):

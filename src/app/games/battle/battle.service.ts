@@ -32,6 +32,7 @@ export class BattleService implements OnInit {
   playerDisconnected = false;
   private playerDisconnectedListener = new Subject<boolean>();
   positionedShips = 0;
+  private positionedShipsListener = new Subject<number>();
   // private activePlayersListener = new Subject<string[]>();
 
   constructor(
@@ -94,6 +95,14 @@ export class BattleService implements OnInit {
 
   sendCurrPlayerListener(newVal) {
     this.currPlayerListener.next(newVal);
+  }
+
+  getPositionedShipsListener() {
+    return this.positionedShipsListener.asObservable();
+  }
+
+  sendPositionedShipsListener(newVal) {
+    return this.positionedShipsListener.next(newVal);
   }
 
   // sendActivePlayers(newActivePlayers) {
@@ -225,6 +234,7 @@ export class BattleService implements OnInit {
               console.log('Il punteggio attuale è: ' + this.boards[this.currPlayer].player.score);
               if (this.boards[this.currPlayer].player.score === this.hitsToWin) {
                 console.log('Giocatore ' + this.currPlayer + ', hai vinto!');
+                this.sendBattleResult(this.myBattle);
                 // this.endGame = true; // non serve inserire qui perché lo fa già il socket
                 this.connection.socket.emit('endGame', this.myBattle);
                 return;   // questo return non serve
@@ -238,6 +248,7 @@ export class BattleService implements OnInit {
               this.connection.socket.emit('miss', {myBattle: this.myBattle, ship: ship});
               this.connection.socket.emit('switch player', this.myBattle);
               this.currPlayer = (this.currPlayer + 1) % this.playersNumber;
+              this.sendCurrPlayerListener(this.currPlayer);
               console.log('l\' attuale giocatore è: ' + this.currPlayer);
             }
           }
@@ -323,20 +334,42 @@ export class BattleService implements OnInit {
     this.sendOrientationListener(this.orientation);
   }
 
-  sendBattleResult (players: string[], winner: string) {
+  sendBattleResult (players: string[]) {  // , winner: string
     const localUsers = this.usersService.getLocalUsers();
     const updatePlayers = localUsers.filter(val => players.includes(val.email));
-    for (const elem of updatePlayers) {
+    for (const elem of updatePlayers) {   // incremento di 1 il conteggio di partite giocate dai 2 partecipanti
+      const payload = {battlesCount: elem.battlesCount};
       this.http.put<{
         message: string,
         esito: object
-      }>('http://localhost:3000/api/users/upgradeBattles/' + elem._id, elem.battlesCount)
+      }>('http://localhost:3000/api/users/upgradeBattles/' + elem._id, payload)
         .subscribe((response) => {
           console.log('Msg frontend: user\'s battlesCount upgraded', response);
           this.connection.socket.emit('user updated', { message: 'user\'s battlesCount upgraded' });
         },
-        (err) => {});
+        (err) => {
+          console.log(err);
+        });
     }
+    console.log('Al momento della vittoria i players sono: ' + players);
+    let winner: string;
+    this.currPlayer === 0 ? winner = players[0] : winner = players[1];
+    console.log('Il winner è: ' + winner);
+    const winnerObj = updatePlayers.find(elem => elem.email === winner);
+    console.log('Il winnerObj è: ' + JSON.stringify(winnerObj));
+    const victory = {score: winnerObj.score};
+    console.log('la victory è: ' + victory);
+    this.http.put<{   // incremento di 1 il valore "score" del vincitore
+      message: string,
+      esito: object
+    }>('http://localhost:3000/api/users/upgradeScore/' + winnerObj._id, victory)
+      .subscribe((response) => {
+        console.log('Msg frontend: user\'s score upgraded', response);
+        this.connection.socket.emit('user updated', { message: 'user\'s score upgraded' });
+      },
+      (err) => {
+        console.log(err);
+      });
   }
 
   // checkNE(boardId: number, row: number, col: number, shipId: string) {

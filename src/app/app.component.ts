@@ -107,6 +107,7 @@ export class AppComponent implements OnInit {
           const myMail = this.usersService.getLoggedEmail();
           if (myBattle.includes(myMail)) {
             this.battleService.positionedShips++;
+            this.battleService.sendPositionedShipsListener(this.battleService.positionedShips);
             console.log('Posizionate ' + this.battleService.positionedShips + ' flotte');
           }
         });

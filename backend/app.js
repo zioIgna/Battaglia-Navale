@@ -181,6 +181,8 @@ app.post('/api/users/login', (req, res, next) => {
         });
 });
 
+
+
 app.put('/api/users/switch/:id', (req, res, next) => {
     console.log('sono arrivato all\'indirizzo dello switch');
     console.log('questo è il req.body: ', req.body);
@@ -199,7 +201,7 @@ app.put('/api/users/switch/:id', (req, res, next) => {
         console.log('problemi nello update user: ', err);
     });
 
-    // User.updateOne({ _id: req.params.id, role: { $eq: 'basic' } }, { $set: { role: 'admin' } }, (err, raw) => {
+  // User.updateOne({ _id: req.params.id, role: { $eq: 'basic' } }, { $set: { role: 'admin' } }, (err, raw) => {
     //     if (err) {
     //         res.status(400).json({ message: 'User update failed', errore: err });
     //     }
@@ -224,37 +226,38 @@ app.put('/api/users/switch/:id', (req, res, next) => {
     //     console.log(err);
     //     return res.status(400).json({ message: 'problemi con funzione edit' });
     // })
+
 })
 
 app.put('/api/users/upgradeBattles/:id', (req, res, next) => {  // gestire l'incremento di partite giocate e vittorie con unico metodo
   newBattlesCount = req.body.battlesCount + 1;
-  User.updateOne({ _id: req.params.id }, {$set: {battlesCount: newBattlesCount}}), (err, raw) => {
+  User.updateOne({ _id: req.params.id }, {$set: {battlesCount: newBattlesCount}}, (err, raw) => {
     if (err) {
         return res.status(400).json({ message: 'User\'s battles update failed', esito: err });
     }
     console.log('Msg da backend: Battles Update riuscito');
     return res.status(200).json({ message: 'Battles Update successful', esito: raw });
-  }
-}).then(result => {
-  console.log('risultato dello update: ', result);
-}).catch(err => {
-  console.log('problemi nello update user: ', err);
-});
+  }).then(result => {
+    console.log('risultato dello update: ', result);
+  }).catch(err => {
+    console.log('problemi nello update user: ', err);
+  });
+})
 
 app.put('/api/users/upgradeScore/:id', (req, res, next) => {
   newVictoriesCount = req.body.score + 1;
-  User.updateOne({ _id: req.params.id }, {$set: {score: newVictoriesCount}}), (err, raw) => {
+  User.updateOne({ _id: req.params.id }, {$set: {score: newVictoriesCount}}, (err, raw) => {
     if (err) {
       return res.status(400).json( { message: 'User\'s score update failed', esito: err});
     }
     console.log('Msg da backend: Score Update riuscito');
     return res.status(200).json({ message: 'Score Update successful', esito: raw});
-  }
-}).then(result => {
-  console.log('risultato dello update: ', result);
-}).catch(err => {
-  console.log('problemi nello update user: ', err);
-});
+  }).then(result => {
+    console.log('risultato dello update: ', result);
+  }).catch(err => {
+    console.log('problemi nello update user: ', err);
+  });
+})
 
 app.put('/api/users/fights/:id', (req, res, next) => {}); // forse non serve questo metodo
 

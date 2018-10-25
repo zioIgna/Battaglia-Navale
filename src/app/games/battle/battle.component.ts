@@ -25,6 +25,7 @@ export class BattleComponent implements OnInit {
   playerDisconnected: boolean;
   playerDisconnectedSub: Subscription;
   positionedShips: number;
+  positionedShipsSub: Subscription;
   stringifiedBinaryId: string;
 
   constructor(private battleService: BattleService, private connectionService: ConnectionService) {}
@@ -42,6 +43,7 @@ export class BattleComponent implements OnInit {
     this.endGame = this.battleService.endGame;
     this.endGameSub = this.battleService.getEndGameListener().subscribe( newValue => this.endGame = newValue);
     this.positionedShips = this.battleService.positionedShips;
+    this.positionedShipsSub = this.battleService.getPositionedShipsListener().subscribe ( newVal => this.positionedShips = newVal);
     this.orientation = this.battleService.orientation;
     this.orientationSub = this.battleService.getOrientationListener().subscribe(newOrientation => this.orientation = newOrientation);
     this.playerDisconnected = this.battleService.playerDisconnected;
