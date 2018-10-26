@@ -1,8 +1,5 @@
-<p>
-  game-list works!
-</p>
 <mat-nav-list>
   <mat-list-item *ngFor="let game of games">
-    <div *ngIf="game !== loggedUserEmail && !activePlayers?.includes(game)">{{game}} <button mat-icon-button color="primary" (click)="onStartBattle(game)"><i class="material-icons">launch</i></button></div>
+    <div *ngIf="game !== loggedUserEmail && !activePlayers?.includes(game) && loggedEmails.includes(game)">{{game}} <button mat-icon-button color="primary" (click)="onStartBattle(game)"><i class="material-icons">launch</i></button></div>
   </mat-list-item>
 </mat-nav-list>

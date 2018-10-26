@@ -1,9 +1,11 @@
 <div class="mat-subheading-2">You are player {{binaryId}}</div>
-<!-- <div>Stringified id: {{stringifiedBinaryId}}</div>
-<div>EndGame: {{endGame}}</div> -->
+<!-- <div>Stringified id: {{stringifiedBinaryId}}</div> -->
+<!-- <div>EndGame: {{endGame}}</div> -->
 <div class="mat-subheading-2" *ngIf="!endGame && positionedShips == 2">E' il turno del giocatore <b>{{currPlayer}}</b></div>
 <div *ngIf="!endGame; else gameOver">
+  <!-- <div *ngFor="let ship of this.boards[binaryId].player.shipsToPlace">shipToPlace = {{ship.id}}</div> -->
   <div class="mat-subheading-2" *ngIf="this.boards[binaryId].player.shipsToPlace.length">
+    <!-- <div>ShipsToPlace: {{this.boards[binaryId].player.shipsToPlace.length}}</div> -->
     <div *ngIf="positionedShips < 2">Scegli l'orientamento della prossima nave (verticale di default):
         <button mat-raised-button color="primary"
           (click)="onSetHorizontal()">

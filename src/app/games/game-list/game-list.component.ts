@@ -21,6 +21,8 @@ export class GameListComponent implements OnInit, OnDestroy {
   private loggedEmailSub: Subscription;
   activePlayers: string[] = [];
   private activePlayersSub: Subscription;
+  loggedEmails: string[];
+  private loggedEmailsSub: Subscription;
 
   // aggiunto da qui
   private connectionId: string;
@@ -54,6 +56,8 @@ export class GameListComponent implements OnInit, OnDestroy {
     this.activePlayers = this.usersService.activePlayers;
     this.activePlayersSub = this.usersService.getActivePlayersListener()
       .subscribe(newActivePlayers => this.activePlayers = newActivePlayers);
+    this.loggedEmails = this.usersService.loggedEmails;
+    this.loggedEmailsSub = this.usersService.getLoggedEmailsPluralListener().subscribe(newEmails => this.loggedEmails = newEmails);
   }
 
   onStartBattle(game: string) {

@@ -130,6 +130,8 @@ export class BattleService implements OnInit {
     this.usersService.getLoggedEmail() === players.nowPlaying[0] ? this.connection.binaryId = 0 : this.connection.binaryId = 1;
     this.connection.sendId(this.connection.binaryId);
     console.log('Questa è la binaryId:  ' + this.connection.binaryId);
+    this.positionedShips = 0;
+    this.sendPositionedShipsListener(0);
     this.router.navigate(['/battle']);
     for (const ship of this.boards[this.connection.binaryId].player.shipsToPlace) {
       this.hitsToWin += ship.size;

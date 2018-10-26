@@ -61,7 +61,7 @@ server.on("error", onError);
 server.on("listening", onListening);
 server.listen(port, function () {
     console.log('listening on port ' + port);
-}
+  }
 );
 
 io.on('connection', function (socket) {
@@ -76,39 +76,44 @@ io.on('connection', function (socket) {
         io.emit('logged user', loggedUsers);
     });
     socket.on('disconnect', function () {
-        loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
-        if (myServerBattle) {  // nel caso in cui un utente si disconnetta DURANTE una partita
-          // io.emit('disconnectionEndGame', myServerBattle);
-          let myBattleCopy = [...myServerBattle];
-          const lunghezza = myBattleCopy.length;
-          for (let i = 0; i < lunghezza; i++) {
-            let val = myBattleCopy.pop();
-            let index = activePlayers.indexOf(val);
-            if (index > -1) {
-              activePlayers.splice(index, 1);
-            };
-          };
-          console.log('ora questi sono gli activePlayers: ' + activePlayers);
-          console.log('e questa è myServerBattle: ' + myServerBattle);
-          // let index = games.indexOf(myServerBattle[0]);
-          // games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
-          console.log('ora questi sono i games: ' + games);
-          const updatedPlayers = { myBattle: myServerBattle, activePlayers: activePlayers, games: games, playerDisconnected: true};
-          io.emit('endGame', updatedPlayers);
-        };
-        // myServerBattle = undefined;
-        io.emit('logged user', loggedUsers);
+      userDisconnect();
+
+      // loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
+      //   if (myServerBattle) {  // nel caso in cui un utente si disconnetta DURANTE una partita
+      //     // io.emit('disconnectionEndGame', myServerBattle);
+      //     let myBattleCopy = [...myServerBattle];
+      //     const lunghezza = myBattleCopy.length;
+      //     for (let i = 0; i < lunghezza; i++) {
+      //       let val = myBattleCopy.pop();
+      //       let index = activePlayers.indexOf(val);
+      //       if (index > -1) {
+      //         activePlayers.splice(index, 1);
+      //       };
+      //     };
+      //     console.log('ora questi sono gli activePlayers: ' + activePlayers);
+      //     console.log('e questa è myServerBattle: ' + myServerBattle);
+      //     // let index = games.indexOf(myServerBattle[0]);
+      //     // games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
+      //     console.log('ora questi sono i games: ' + games);
+      //     const updatedPlayers = { myBattle: myServerBattle, activePlayers: activePlayers, games: games, playerDisconnected: true};
+      //     io.emit('endGame', updatedPlayers);
+      //   };
+      //   // myServerBattle = undefined;
+      //   io.emit('logged user', loggedUsers);
+
         console.log('user disconnected');
     });
     socket.on('disconnect', function (){    // aggiunto per implementare un collegamento utente-connessione
         console.log("Socket disconnected: " +  myId);   // aggiunto per implementare un collegamento utente-connessione
     });
     socket.on('user loggedOut', function (datiConnessione) {
-      // loggedUsers.pop(loggedUsers.find(element => element.connectionId === datiConnessione.connectionId));
-      loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(datiConnessione.connectionId), 1);
-      console.log('questa è lo id da eliminare a un logOut: ' + loggedUsers.map(function(element) {return element.connectionId}).indexOf(datiConnessione.connectionId));
-        io.emit('logged user', loggedUsers);
-        console.log('user disconnected (loggedOut)');
+      userDisconnect();
+
+      // loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(datiConnessione.connectionId), 1);
+      // console.log('questa è lo id da eliminare a un logOut: ' + loggedUsers.map(function(element) {return element.connectionId}).indexOf(datiConnessione.connectionId));
+      // io.emit('logged user', loggedUsers);
+
+      console.log('user disconnected (loggedOut)');
     });
     // socket.on('user logged', function (){
     //     console.log("Questo è il mio socket.id: " + myId);
@@ -144,7 +149,7 @@ io.on('connection', function (socket) {
       // console.log('nel server, questi sono gli updatedPlayers: ' + JSON.stringify(updatedPlayers));
       io.emit('start battle', updatedPlayers);
     });
-    socket.on('push myServerBattle', function(myBattle){
+    socket.on('push myServerBattle', function(myBattle){  // forse questo non serve: già fatto in 'start battle' (?)
       myServerBattle = myBattle;
       console.log('ho appena pushato ' + myBattle + ' in myServerBattle: ' + myServerBattle);
     });
@@ -182,4 +187,33 @@ io.on('connection', function (socket) {
     socket.on('switch player', function (myBattle) {
       socket.broadcast.emit('switch player', myBattle);
     });
+
+
+    function userDisconnect(){
+      console.log('fighterDisconnect triggered');
+      loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
+      if (myServerBattle) {  // nel caso in cui un utente si disconnetta DURANTE una partita
+        // io.emit('disconnectionEndGame', myServerBattle);
+        let myBattleCopy = [...myServerBattle];
+        const lunghezza = myBattleCopy.length;
+        for (let i = 0; i < lunghezza; i++) {
+          let val = myBattleCopy.pop();
+          let index = activePlayers.indexOf(val);
+          if (index > -1) {
+            activePlayers.splice(index, 1);
+          };
+        };
+        console.log('ora questi sono gli activePlayers: ' + activePlayers);
+        console.log('e questa è myServerBattle: ' + myServerBattle);
+        // let index = games.indexOf(myServerBattle[0]);
+        // games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
+        console.log('ora questi sono i games: ' + games);
+        const updatedPlayers = { myBattle: myServerBattle, activePlayers: activePlayers, games: games, playerDisconnected: true};
+        io.emit('endGame', updatedPlayers);
+        console.log('ora myServerBattle = ' + myServerBattle);
+        myServerBattle = undefined;
+        console.log('ora myServerBattle = ' + myServerBattle);
+      };
+      io.emit('logged user', loggedUsers);
+    };
 });

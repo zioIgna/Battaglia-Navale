@@ -64,6 +64,7 @@ export class AppComponent implements OnInit {
 
         this.connessione.socket.on('logged user', (users) => {
           this.usersService.loggedEmails = users.map(user => user.email);
+          this.usersService.sendLoggedEmailsPluralListener(this.usersService.loggedEmails);
           console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
         });
 
@@ -85,7 +86,9 @@ export class AppComponent implements OnInit {
             this.battleService.endGame = false;
             this.battleService.sendEndGameListener(false);
             this.battleService.currPlayer = players.currPlayer; // aggiungere sottoscrizione!!! -> forse non serve
+            // forse questo non serve: già fatto in 'start battle' (?):
             this.connessione.socket.emit('push myServerBattle', players.nowPlaying);
+            //
             this.battleService.createBoards(players);
           }
         });

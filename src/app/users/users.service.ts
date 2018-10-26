@@ -26,7 +26,8 @@ export class UsersService implements OnInit {
     private loggedEmailListener = new Subject<string>();
     private tokenTimer: any;
     private connectionId: string;
-    loggedEmails = [];
+    loggedEmails: string[] = [];  // memorizzo la mail degli utenti attualmente on-line
+    private loggedEmailsListener = new Subject<string[]>();
     activePlayers = [];
     private activePlayersListener = new Subject<string[]>();
     games = [];
@@ -70,6 +71,14 @@ export class UsersService implements OnInit {
 
     getLoggedEmailListener() {
         return this.loggedEmailListener.asObservable();
+    }
+
+    getLoggedEmailsPluralListener() {
+      return this.loggedEmailsListener.asObservable();
+    }
+
+    sendLoggedEmailsPluralListener(loggedEmails: string[]) {
+      this.loggedEmailsListener.next(loggedEmails);
     }
 
     getConnectionId() {
