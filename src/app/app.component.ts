@@ -14,6 +14,8 @@ import { BattleService } from './games/battle/battle.service';
 export class AppComponent implements OnInit {
     private loggedEmail: string;
     private loggedEmailListener: Subscription;
+    private loggedEmails: string[];
+    private loggedEmailsListener: Subscription;
 
     constructor(
         private connessione: ConnectionService,
@@ -44,6 +46,11 @@ export class AppComponent implements OnInit {
         this.loggedEmail = this.usersService.getLoggedEmail();
         this.loggedEmailListener = this.usersService.getLoggedEmailListener().subscribe(loggedMail => {
             this.loggedEmail = loggedMail;
+        });
+
+        this.loggedEmails = this.usersService.loggedEmails;
+        this.loggedEmailsListener = this.usersService.getLoggedEmailsPluralListener().subscribe(newEmails => {
+          this.loggedEmails = newEmails;
         });
 
         this.connessione.socket.on('new user', (obj) => {

@@ -72,9 +72,9 @@ export class PlayerComponent {
   constructor() {
     // manca l'implementazione di id = idPassato
     this.shipsToPlace.push(this.Cacciatorpediniere01
-      , this.Cacciatorpediniere02,
-      this.Cacciatorpediniere03, this.Cacciatorpediniere04,
-      this.Sottomarino01, this.Sottomarino02, this.Corazzata01, this.Corazzata02, this.Portaerei
+      // , this.Cacciatorpediniere02,
+      // this.Cacciatorpediniere03, this.Cacciatorpediniere04,
+      // this.Sottomarino01, this.Sottomarino02, this.Corazzata01, this.Corazzata02, this.Portaerei
       );
   }
 

@@ -10,6 +10,7 @@ const checkAuth = require('./middleware/check-auth');
 
 const app = express();
 
+let loggedUsers = []; // contiene oggetti così formati: {email: ..., connectionId: ...}
 let activePlayers = [];
 let games = [];
 
@@ -97,6 +98,13 @@ app.get('/api/users', checkAuth, (req, res, next) => {
     //     note: 'Users fetched successfully!',
     //     users: users
     // });
+});
+
+app.get('/api/loggedUsers', (req, res, next) => {
+  res.status(200).json({
+    note: 'Users fetched successfully!',
+    users: loggedUsers
+  });
 });
 
 app.post('/api/users/signup', (req, res, next) => {
@@ -272,3 +280,4 @@ app.delete('/api/users/delete/:id', (req, res, next) => {
 module.exports = app;
 module.exports.players = activePlayers;
 module.exports.games = games;
+module.exports.loggedUsers = loggedUsers;

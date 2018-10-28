@@ -52,7 +52,7 @@ const server = http.Server(app);    //ho cambiato il metodo da "createServer(app
 const io = require("socket.io").listen(server);
 // let loggedIds = [];
 // let loggedEmails = [];
-let loggedUsers = []; // contiene oggetti così formati: {email: ..., connectionId: ...}
+let loggedUsers = app.loggedUsers; // contiene oggetti così formati: {email: ..., connectionId: ...}
 let games = app.games;
 let activePlayers = app.players;
 // fin qui
