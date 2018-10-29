@@ -168,6 +168,13 @@ export class AppComponent implements OnInit {
           // non aggiungere un reindirizzamento (né il punto al vincitore perché viene dato direttamente nel metodo getPosition
         });
 
+        this.connessione.socket.on('abandoned battle', (abandonedEmail) => {
+          if (this.battleService.myBattle.includes(abandonedEmail)) {
+            console.log('Confermo che un giocatore ha abbandonato la battaglia');
+            this.connessione.socket.emit('confirm abandoned battle', this.battleService.myBattle);
+          }
+        });
+
         this.connessione.socket.on('disconnectionEndGame', (disconnectedEmail) => { // non utilizzata
           const myMail = this.usersService.getLoggedEmail();
           if (myMail === disconnectedEmail) {

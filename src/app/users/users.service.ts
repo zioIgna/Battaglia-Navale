@@ -126,7 +126,7 @@ export class UsersService implements OnInit {
     //   });
     // }
 
-    returnUsersEmails(): Promise<string[]> {  // non utilizzata: funzionerebbe se non necessitasse di checkAuth
+    returnUsersEmails(): Promise<string[]> {  // invocata da login() per verificare se utente già loggato
       const promise = new Promise<string[]>((resolve, reject) => {
         this.http.get<{ note: string, users: any }>('http://localhost:3000/api/loggedUsers')
           .toPromise()
@@ -202,124 +202,7 @@ export class UsersService implements OnInit {
             });
     }
 
-    login2(email: string, password: string) {
-        console.log('questi sono i loggedEmails a un nuovo login: ' + this.loggedEmails);
-        console.log('includono la mail che vuole loggarsi? ' + this.loggedEmails.includes(email));
-        // const usersEmailsPromise = this.returnUsersEmails();
-        // usersEmailsPromise.then((data) => {
-        //   console.log('i dati da http sono: ' + data);
-          if (!this.loggedEmails.includes(email)) {
-            const authData: AuthData = {
-                  email: email,
-                  password: password
-            };
-            this.http.post<{
-                token: string, expiresIn: number, userRole: string, userId: string,
-                email: string, activePlayers: string[], games: string[]
-            }>('http://localhost:3000/api/users/login', authData)
-                .subscribe(response => {
-                    console.log('questa è la risposta al login: ', response);
-                    const token = response.token;
-                    this.token = token;
-                    if (token) {
-                        const expiresInDuration = response.expiresIn;
-                        this.tokenTimer = setTimeout(() => {
-                            this.logout();
-                        }, expiresInDuration * 1000);
-                        // si passa l'info se il soggetto loggato è amministratore o no
-                        this.isAdmin = (response.userRole === 'admin');
-                        this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
-                        console.log('è amministratore? ', response.userRole === 'admin');
-                        this.loggedUserId = response.userId;
-                        this.loggedUserIdListener.next(this.loggedUserId);
-                        console.log('questo è lo id loggato', this.loggedUserId);
-                        this.loggedEmail = response.email;
-                        this.loggedEmailListener.next(this.loggedEmail);
-                        //
-                        this.authStatusListener.next(true);  // questo comando serve solo all'header
-                        this.router.navigate(['/overview']);
-                        this.connectionId = this.connessione.socket.id;
-                        console.log('Nel log-in lo id connessione è: ' + this.connectionId);
-                        const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
-                        console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
-                        this.connessione.socket.emit('logged user', datiConnessione);
-                        this.activePlayers = response.activePlayers;
-                        this.sendActivePlayers(response.activePlayers);
-                        this.games = response.games;
-                        this.sendGames(response.games);
-                    }
-                });
-            } else {
-              console.log('L\'utente è già loggato');
-            }
-
-        // });
-        // if (!usersEmails.includes(email)) {
-        // if (!this.loggedEmails.includes(email)) {
-
-    }
-
-    logout() {
-        // authStatusListener serve solo all'header per sapere che bottoni mostrare
-        const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
-        this.token = null;
-        this.isAdmin = false;
-        this.loggedUserId = null;
-        this.loggedEmail = null;
-        this.authStatusListener.next(false);
-        clearTimeout(this.tokenTimer);
-        this.connessione.socket.emit('user loggedOut', datiConnessione);
-        console.log('questi sono i dati connessione che invio al logout: ' + JSON.stringify(datiConnessione));
-        this.router.navigate(['/']);
-    }
-
-    deleteUser(userId: string) {
-        this.http.delete('http://localhost:3000/api/users/delete/' + userId).subscribe((response) => {
-            console.log('Msg frontend: user deleted, backend: ', response);
-            this.connessione.socket.emit('deleted user', { message: 'utente eliminato' });
-            if (this.loggedUserId === userId) {
-                this.logout();
-            }
-        }, (err) => {
-            console.log('Error: user not deleted ', err);
-        });
-    }
-
-    switchRole(userId: string, role: string) {
-        console.log('questo è il role passato: ', role);
-        const newSetting = {
-            role: role
-        };
-        this.http.put<{
-            msg: string,
-            outcome: object
-        }>('http://localhost:3000/api/users/switch/' + userId, newSetting)
-            .subscribe(
-                (response) => {
-                    console.log('Msg frontend: user\'s role switched', response);
-                    this.connessione.socket.emit('user updated', { message: 'user\'s role switched' });
-                },
-                (err) => {
-                    console.log('Error: user\'s role not switched', err);
-                }
-            );
-    }
-
-    // createUserNoPropagate(email: string, password: string) {
-    //     const user: User = {
-    //         id: null,
-    //         email: email,
-    //         password: password,
-    //         ruolo: 'basic'
-    //     };
-    //     this.users.push(user);
-    //     console.log(this.users);
-    //     this.usersUpdated.next([...this.users]);
-    // }
-
     login(email: string, password: string) {
-      console.log('questi sono i loggedEmails a un nuovo login: ' + this.loggedEmails);
-      console.log('includono la mail che vuole loggarsi? ' + this.loggedEmails.includes(email));
       const usersEmailsPromise = this.returnUsersEmails();
       usersEmailsPromise.then((data) => {
         console.log('i dati da http sono: ' + data);
@@ -371,8 +254,118 @@ export class UsersService implements OnInit {
       });
     }
 
+    logout() {
+        // authStatusListener serve solo all'header per sapere che bottoni mostrare
+        const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
+        this.token = null;
+        this.isAdmin = false;
+        this.loggedUserId = null;
+        this.loggedEmail = null;
+        this.authStatusListener.next(false);
+        clearTimeout(this.tokenTimer);
+        this.connessione.socket.emit('user loggedOut', datiConnessione);
+        console.log('questi sono i dati connessione che invio al logout: ' + JSON.stringify(datiConnessione));
+        this.router.navigate(['/']);
+    }
+
+    abandonBattle (myMail) {
+      this.connessione.socket.emit('abandoned battle', myMail);
+    }
+
+    deleteUser(userId: string) {
+        this.http.delete('http://localhost:3000/api/users/delete/' + userId).subscribe((response) => {
+            console.log('Msg frontend: user deleted, backend: ', response);
+            this.connessione.socket.emit('deleted user', { message: 'utente eliminato' });
+            if (this.loggedUserId === userId) {
+                this.logout();
+            }
+        }, (err) => {
+            console.log('Error: user not deleted ', err);
+        });
+    }
+
+    switchRole(userId: string, role: string) {
+        console.log('questo è il role passato: ', role);
+        const newSetting = {
+            role: role
+        };
+        this.http.put<{
+            msg: string,
+            outcome: object
+        }>('http://localhost:3000/api/users/switch/' + userId, newSetting)
+            .subscribe(
+                (response) => {
+                    console.log('Msg frontend: user\'s role switched', response);
+                    this.connessione.socket.emit('user updated', { message: 'user\'s role switched' });
+                },
+                (err) => {
+                    console.log('Error: user\'s role not switched', err);
+                }
+            );
+    }
+
+    // createUserNoPropagate(email: string, password: string) {
+    //     const user: User = {
+    //         id: null,
+    //         email: email,
+    //         password: password,
+    //         ruolo: 'basic'
+    //     };
+    //     this.users.push(user);
+    //     console.log(this.users);
+    //     this.usersUpdated.next([...this.users]);
+    // }
+
+
     ngOnInit() {
         this.connessione.getConnection();
+    }
+
+    login2(email: string, password: string) {   // sostituita con funzione "login()": controlla se utente già loggato
+      if (!this.loggedEmails.includes(email)) {
+        const authData: AuthData = {
+              email: email,
+              password: password
+        };
+        this.http.post<{
+            token: string, expiresIn: number, userRole: string, userId: string,
+            email: string, activePlayers: string[], games: string[]
+        }>('http://localhost:3000/api/users/login', authData)
+            .subscribe(response => {
+                console.log('questa è la risposta al login: ', response);
+                const token = response.token;
+                this.token = token;
+                if (token) {
+                    const expiresInDuration = response.expiresIn;
+                    this.tokenTimer = setTimeout(() => {
+                        this.logout();
+                    }, expiresInDuration * 1000);
+                    // si passa l'info se il soggetto loggato è amministratore o no
+                    this.isAdmin = (response.userRole === 'admin');
+                    this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
+                    console.log('è amministratore? ', response.userRole === 'admin');
+                    this.loggedUserId = response.userId;
+                    this.loggedUserIdListener.next(this.loggedUserId);
+                    console.log('questo è lo id loggato', this.loggedUserId);
+                    this.loggedEmail = response.email;
+                    this.loggedEmailListener.next(this.loggedEmail);
+                    //
+                    this.authStatusListener.next(true);  // questo comando serve solo all'header
+                    this.router.navigate(['/overview']);
+                    this.connectionId = this.connessione.socket.id;
+                    console.log('Nel log-in lo id connessione è: ' + this.connectionId);
+                    const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
+                    console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
+                    this.connessione.socket.emit('logged user', datiConnessione);
+                    this.activePlayers = response.activePlayers;
+                    this.sendActivePlayers(response.activePlayers);
+                    this.games = response.games;
+                    this.sendGames(response.games);
+                }
+            });
+        } else {
+          console.log('L\'utente è già loggato');
+        }
     }
 
 }
