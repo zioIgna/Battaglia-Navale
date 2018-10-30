@@ -42,6 +42,10 @@ export class UsersService implements OnInit {
       // private gamesService: GamesService
     ) { }
 
+    getConnessione() {
+      return this.connessione;
+    }
+
     getToken() {
         return this.token;
     }

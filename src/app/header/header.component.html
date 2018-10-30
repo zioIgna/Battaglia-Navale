@@ -3,7 +3,8 @@
         <a routerLink="/">Battaglia Navale</a>
     </span>
     <span *ngIf="userIsAuthenticated">
-      <a routerLink="/overview">Battaglia Navale</a>
+      <!-- <a routerLink="/overview">Battaglia Navale</a> -->
+      <button mat-button (click)="onOverview()">Battaglia Navale</button>
     </span>
     <span class="spacer"></span>
     <ul>

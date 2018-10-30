@@ -26,6 +26,7 @@ export class BattleService implements OnInit {
   hits = 0;
   hitsToWin = 0;
   myBattle: string[] = [];
+  private myBattleListener = new Subject<string[]>();
   orientation = 'vertical';
   private orientationListener = new Subject<string>();
   playersNumber = 2;
@@ -105,6 +106,14 @@ export class BattleService implements OnInit {
     return this.positionedShipsListener.next(newVal);
   }
 
+  getMyBattleListener() {
+    return this.myBattleListener.asObservable();
+  }
+
+  sendMyBattleListener(newBattle) {
+    return this.myBattleListener.next(newBattle);
+  }
+
   // sendActivePlayers(newActivePlayers) {
   //   this.activePlayersListener.next(newActivePlayers);
   // }
@@ -116,6 +125,7 @@ export class BattleService implements OnInit {
   createBoards(players) {
     // il primo nell'array myBattle è quello che aveva "dato disponibilità" a giocare, il secondo è quello che "si è unito":
     this.myBattle = [...players.nowPlaying];
+    this.sendMyBattleListener(this.myBattle);
     for (let i = 0; i < this.playersNumber; i++) {
         const player = new PlayerComponent();
         player.id = i;
