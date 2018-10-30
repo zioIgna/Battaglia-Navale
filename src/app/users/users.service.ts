@@ -250,6 +250,8 @@ export class UsersService implements OnInit {
                       this.games = response.games;
                       this.sendGames(response.games);
                   }
+              }, (err) => {
+                console.log('Error: user could not login ', err);
               });
           } else {
             console.log('L\'utente è già loggato');
