@@ -20,7 +20,7 @@ export class MsgListComponent implements OnInit, OnDestroy {
     messages: Message[] = [];
     msgSub: Subscription;
     loggedEmail: string;
-    loggedEmailListenerSub: Subscription;
+    loggedEmailListenerSub: Subscription; // non usata?
     soloAutori: string[] = [];
     sortedMsgs: {}; // messaggi raggruppati per autori in array (array di array) a indici letterali (email)
     myMsgs: Message[] = [];

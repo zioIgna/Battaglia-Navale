@@ -1,10 +1,10 @@
 import { UsersService } from './../users/users.service';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { ConnectionService } from '../connection.service';
 import { Subscription, Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class GamesService implements OnInit {
+export class GamesService implements OnInit, OnDestroy {
 
     games: string[] = [];  // ['Player1', 'Player2', 'Player3', 'ignaziocarbonaro@hotmail.com'];
     private gamesSub: Subscription;
@@ -50,6 +50,11 @@ export class GamesService implements OnInit {
       this.games = this.usersService.games;
       // serve questa sottoscrizione?:
       this.gamesSub = this.usersService.getGamesListener().subscribe(newGames => this.games = newGames);
+    }
+
+    ngOnDestroy() {
+      this.gamesSub.unsubscribe();
+      this.activePlayersSub.unsubscribe();
     }
 
 }

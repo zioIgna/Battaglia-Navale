@@ -57,6 +57,7 @@ export class MessageCreateComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.usersSub.unsubscribe();
         this.loggedUserIdSub.unsubscribe();
+        this.loggedEmailListener.unsubscribe();
     }
 
 }

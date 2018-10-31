@@ -55,6 +55,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
         this.usersSub.unsubscribe();
         this.adminSub.unsubscribe();
         this.loggedUserIdSub.unsubscribe();
+        this.loggedEmailSub.unsubscribe();
     }
 
 }

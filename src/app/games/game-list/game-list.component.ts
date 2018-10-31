@@ -15,12 +15,12 @@ import { BattleService } from '../battle/battle.service';
   styleUrls: ['./game-list.component.css']
 })
 export class GameListComponent implements OnInit, OnDestroy {
+  activePlayers: string[] = [];
+  private activePlayersSub: Subscription;
   games: string[]; // ['Player1', 'Player2', 'Player3', 'ignaziocarbonaro@hotmail.com'];
   gamesSub: Subscription;
   loggedUserEmail: string;
   private loggedEmailSub: Subscription;
-  activePlayers: string[] = [];
-  private activePlayersSub: Subscription;
   loggedEmails: string[];
   private loggedEmailsSub: Subscription;
 
@@ -68,8 +68,9 @@ export class GameListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.activePlayersSub.unsubscribe();
     this.gamesSub.unsubscribe();
     this.loggedEmailSub.unsubscribe();
-    this.activePlayersSub.unsubscribe();
+    this.loggedEmailsSub.unsubscribe();
   }
 }

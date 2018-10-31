@@ -78,7 +78,7 @@ export class PlayerComponent {
       );
   }
 
-  setId(newId) {
+  setId(newId) {  // non usata?
     this.id = newId;
   }
 }

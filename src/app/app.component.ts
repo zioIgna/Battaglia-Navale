@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ConnectionService } from './connection.service';
 import { UsersService } from './users/users.service';
 import { MessagesService } from './messages/messages.service';
@@ -11,7 +11,7 @@ import { BattleService } from './games/battle/battle.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     private loggedEmail: string;
     private loggedEmailListener: Subscription;
     private loggedEmails: string[];
@@ -182,6 +182,11 @@ export class AppComponent implements OnInit {
             this.connessione.socket.emit('endGame', [disconnectedEmail]);
           }
         });
+    }
+
+    ngOnDestroy() {
+      this.loggedEmailListener.unsubscribe();
+      this.loggedEmailsListener.unsubscribe();
     }
 
 

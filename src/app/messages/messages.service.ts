@@ -1,19 +1,19 @@
 import { ConnectionService } from './../connection.service';
 import { Message } from './message.model';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UsersService } from '../users/users.service';
 // import * as io from 'socket.io-client';
 
 @Injectable({ providedIn: 'root' })
-export class MessagesService implements OnInit {
+export class MessagesService implements OnInit, OnDestroy {
     private messages: Message[] = [];
     private messagesUpdated = new Subject<Message[]>();
     private soloAutori: string[] = [];
     private loggedEmail: string;
     private loggedEmailListener: Subscription;
-    private loggedEmailListenerSub: Subscription;
+    private loggedEmailListenerSub: Subscription; // non usata?
 
     // proprietà aggiunte da me:
     // private socket;
@@ -112,5 +112,9 @@ export class MessagesService implements OnInit {
             this.loggedEmail = loggedMail;
         });
         // this.connessione.getConnection();
+    }
+
+    ngOnDestroy() {
+      this.loggedEmailListener.unsubscribe();
     }
 }

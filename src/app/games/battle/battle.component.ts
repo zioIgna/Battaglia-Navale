@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BoardComponent } from './board/board.component';
 import { PlayerComponent } from './player/player.component';
 import { BattleService } from './battle.service';
@@ -10,7 +10,7 @@ import { ConnectionService } from 'src/app/connection.service';
   templateUrl: './battle.component.html',
   styleUrls: ['./battle.component.css']
 })
-export class BattleComponent implements OnInit {
+export class BattleComponent implements OnInit, OnDestroy {
 
   boards: BoardComponent[] = [];
   boardsSub: Subscription;
@@ -64,6 +64,16 @@ export class BattleComponent implements OnInit {
 
   onSetVertical() {
     this.battleService.setVertical();
+  }
+
+  ngOnDestroy() {
+    this.boardsSub.unsubscribe();
+    this.binaryIdSub.unsubscribe();
+    this.currPlayerSub.unsubscribe();
+    this.endGameSub.unsubscribe();
+    this.orientationSub.unsubscribe();
+    this.playerDisconnectedSub.unsubscribe();
+    this.positionedShipsSub.unsubscribe();
   }
 
 }
