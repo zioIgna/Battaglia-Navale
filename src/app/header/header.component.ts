@@ -34,6 +34,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/overview']);
   }
 
+  onGames() {
+    this.usersService.getConnessione().socket.emit('back to overview');
+    this.router.navigate(['/games']);
+  }
+
   onLogout() {
     this.usersService.logout();
   }
