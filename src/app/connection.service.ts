@@ -13,6 +13,11 @@ export class ConnectionService {
     // da qui inserito per prova di trasmissione id connessione
     private subject = new Subject<any>();
 
+    constructor() {
+      this.socket = socketIo('http://localhost:3000');
+      console.log('i dati del socket appena connesso sono: ' + this.socket);  // aggiunto per prova
+    }
+
     sendId(id: any) {
         this.subject.next({ myId: id });
     }
@@ -28,12 +33,12 @@ export class ConnectionService {
 
     // constructor(private usersService: UsersService) { }
 
-    getConnection() {
-        if (this.socket === null) {
-            this.socket = socketIo('http://localhost:3000');
-            console.log('i dati del socket appena connesso sono: ' + this.socket);  // aggiunto per prova
-        }
-    }
+    // getConnection() {
+    //     if (this.socket === null) {
+    //         this.socket = socketIo('http://localhost:3000');
+    //         console.log('i dati del socket appena connesso sono: ' + this.socket);  // aggiunto per prova
+    //     }
+    // }
 
 
 }

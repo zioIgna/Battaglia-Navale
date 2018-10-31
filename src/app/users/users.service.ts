@@ -324,7 +324,7 @@ export class UsersService implements OnInit {
 
 
     ngOnInit() {
-        this.connessione.getConnection();
+        // this.connessione.getConnection();
     }
 
     login2(email: string, password: string) {   // sostituita con funzione "login()": controlla se utente già loggato

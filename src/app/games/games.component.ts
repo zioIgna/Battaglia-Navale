@@ -20,7 +20,7 @@ export class GamesComponent implements OnInit, OnDestroy {
   constructor(private gamesService: GamesService, private usersService: UsersService, private connection: ConnectionService) { }
 
   ngOnInit() {
-    this.connection.getConnection();
+    // this.connection.getConnection();
     this.loggedUserEmail = this.usersService.getLoggedEmail();
     this.alreadyWaiting = this.usersService.games.includes(this.loggedUserEmail);
     console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);

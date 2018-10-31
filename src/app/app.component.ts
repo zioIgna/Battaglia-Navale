@@ -29,7 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // if (this.connessione.socket == null) {
         //   this.connessione.socket = this.connessione.getConnection();
         // }
-        this.connessione.getConnection();
+        // this.connessione.getConnection();
         console.log(this.connessione.socket);
         // socket.on('connection', () => {
         //   console.log('user connected');
