@@ -23,6 +23,8 @@ export class GameListComponent implements OnInit, OnDestroy {
   private loggedEmailSub: Subscription;
   loggedEmails: string[];
   private loggedEmailsSub: Subscription;
+  private playableGames: string[];
+  playableGamesSub: Subscription;
 
   // aggiunto da qui
   private connectionId: string;
@@ -53,6 +55,10 @@ export class GameListComponent implements OnInit, OnDestroy {
     // });
     this.games = this.usersService.games;
     this.gamesSub = this.usersService.getGamesListener().subscribe(newGames => this.games = newGames);
+    this.playableGames = this.usersService.games.filter(element => element !== this.loggedUserEmail);
+    this.playableGamesSub = this.usersService.getGamesListener().subscribe(newGames => {
+      this.playableGames = newGames.filter(element => element !== this.loggedUserEmail);
+    });
     this.activePlayers = this.usersService.activePlayers;
     this.activePlayersSub = this.usersService.getActivePlayersListener()
       .subscribe(newActivePlayers => this.activePlayers = newActivePlayers);
@@ -72,5 +78,6 @@ export class GameListComponent implements OnInit, OnDestroy {
     this.gamesSub.unsubscribe();
     this.loggedEmailSub.unsubscribe();
     this.loggedEmailsSub.unsubscribe();
+    this.playableGamesSub.unsubscribe();
   }
 }

@@ -191,6 +191,7 @@ io.on('connection', function (socket) {
       let mySelf = loggedUsers.find(obj => obj.connectionId == myId);
       if(mySelf){
         loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
+        io.emit('logged user', loggedUsers);
         // se utente stava giocando una partita (non terminata) avviso tutti gli utenti per rintracciare l'altro
         // giocatore della stessa partita: sarà lui a far partire la comunicazione che una partita è stata interrotta
         // e indicherà quali utenti eliminare dagli active players

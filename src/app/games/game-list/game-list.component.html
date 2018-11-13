@@ -1,5 +1,7 @@
 <mat-nav-list>
-  <mat-list-item *ngFor="let game of games">
-    <div *ngIf="game !== loggedUserEmail && !activePlayers?.includes(game) && loggedEmails.includes(game)">{{game}} <button mat-icon-button color="primary" (click)="onStartBattle(game)"><i class="material-icons">launch</i></button></div>
+  <mat-list-item *ngFor="let game of playableGames">
+    <div *ngIf="!activePlayers?.includes(game) && loggedEmails.includes(game)">{{game}} <button mat-icon-button color="primary" (click)="onStartBattle(game)"><i class="material-icons">launch</i></button></div>
   </mat-list-item>
 </mat-nav-list>
+
+<!-- game !== loggedUserEmail &&  // condizione non necessaria nell'ngIf -->
