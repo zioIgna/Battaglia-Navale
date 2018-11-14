@@ -1,7 +1,13 @@
-<mat-nav-list>
+<mat-nav-list>  <!-- *ngIf="playableGames?.length; else noGames" -->
+  <p>Lunghezza dei playableGames: {{playableGames?.length}}</p>
   <mat-list-item *ngFor="let game of playableGames">
-    <div *ngIf="!activePlayers?.includes(game) && loggedEmails.includes(game)">{{game}} <button mat-icon-button color="primary" (click)="onStartBattle(game)"><i class="material-icons">launch</i></button></div>
+    <div>{{game}} <button mat-icon-button color="primary" (click)="onStartBattle(game)"><i class="material-icons">launch</i></button></div>
   </mat-list-item>
 </mat-nav-list>
 
+<!-- *ngIf="!activePlayers?.includes(game) && loggedEmails.includes(game)"  // ngIf probabilmente non serve -->
 <!-- game !== loggedUserEmail &&  // condizione non necessaria nell'ngIf -->
+
+<ng-template #noGames>
+  <p class="mat-subheading-2">Non ci sono partite in attesa per ora...</p>
+</ng-template>

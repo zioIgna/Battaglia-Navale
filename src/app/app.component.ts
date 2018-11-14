@@ -77,6 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.connessione.socket.on('new game', (newGames) => {
           // this.gamesService.sendGames(newGames);
+          console.log('ricevuto il lancio di nuovo game, questa è la lista: ' + newGames);
           this.usersService.games = newGames;
           this.usersService.sendGames(newGames);
         });
