@@ -55,7 +55,10 @@ export class GameListComponent implements OnInit, OnDestroy {
     // });
     this.activePlayers = this.usersService.activePlayers;
     this.activePlayersSub = this.usersService.getActivePlayersListener()
-      .subscribe(newActivePlayers => this.activePlayers = newActivePlayers);  // forse non serve la subscr
+      .subscribe(newActivePlayers => {
+        this.activePlayers = newActivePlayers;
+        this.updatePlayableGames();
+      });  // forse non serve la subscr
     this.loggedEmails = this.usersService.loggedEmails;
     this.loggedEmailsSub = this.usersService.getLoggedEmailsPluralListener().subscribe(newEmails => {
       this.loggedEmails = newEmails
@@ -66,7 +69,10 @@ export class GameListComponent implements OnInit, OnDestroy {
       this.games = newGames;
       this.updatePlayableGames();
     });  // forse questa subscription serve solo per updatePlayableGames
-    this.playableGames = this.usersService.games.filter(element => element !== this.loggedUserEmail);
+    // this.playableGames = this.usersService.games.filter(element => {
+    //   return (element !== this.loggedUserEmail) && this.loggedEmails.includes(element);
+    // });
+    this.updatePlayableGames();
     // this.playableGames = this.usersService.games.filter(element => {
     // element !== this.loggedUserEmail
     // && (!this.activePlayers || this.activePlayers.length <1 || !this.activePlayers.includes(element))
@@ -98,7 +104,11 @@ export class GameListComponent implements OnInit, OnDestroy {
 
   updatePlayableGames() {
     this.playableGames = this.games.filter(element => {
-      return ((element != this.loggedUserEmail) && this.loggedEmails.includes(element));
+      return (
+        (element != this.loggedUserEmail)
+        && this.loggedEmails.includes(element)
+        && (!this.activePlayers || this.activePlayers.length < 1 || !this.activePlayers.includes(element))
+      );
     })
   }
 
