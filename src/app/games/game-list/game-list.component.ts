@@ -28,7 +28,6 @@ export class GameListComponent implements OnInit, OnDestroy {
 
   // aggiunto da qui
   private connectionId: string;
-  // private connectionIdSub: Subscription;
   // a qui
 
   constructor(
@@ -46,13 +45,8 @@ export class GameListComponent implements OnInit, OnDestroy {
       this.loggedUserEmail = loggedUser;
       console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);
     });
-    // this.connectionId = this.connectionService.socket.id;
     this.connectionId = this.usersService.getConnectionId();
     console.log('Nella game-list lo id connessione è: ' + this.connectionId);
-    // this.connectionIdSub = this.connectionService.getId().subscribe(id => {
-    //   this.connectionId = id;
-    //   console.log('Nella game-list lo id connessione è: ' + this.connectionId);
-    // });
     this.activePlayers = this.usersService.activePlayers;
     this.activePlayersSub = this.usersService.getActivePlayersListener()
       .subscribe(newActivePlayers => {
@@ -69,37 +63,8 @@ export class GameListComponent implements OnInit, OnDestroy {
       this.games = newGames;
       this.updatePlayableGames();
     });  // forse questa subscription serve solo per updatePlayableGames
-    // this.playableGames = this.usersService.games.filter(element => {
-    //   return (element !== this.loggedUserEmail) && this.loggedEmails.includes(element);
-    // });
     this.updatePlayableGames();
-    // this.playableGames = this.usersService.games.filter(element => {
-    // element !== this.loggedUserEmail
-    // && (!this.activePlayers || this.activePlayers.length <1 || !this.activePlayers.includes(element))
-    // && this.loggedEmails
-    // && this.loggedEmails.includes(element)
-    // });
-    // this.playableGames = this.games;
     console.log('questi sono i playable games: ' + this.playableGames);
-    // this.playableGamesSub = this.usersService.getGamesListener().subscribe(newGames => {
-    //   this.playableGames = newGames.filter(element => element !== this.loggedUserEmail);
-    // });
-    // this.playableGamesSub = this.usersService.getGamesListener().subscribe(newGames => {
-    //   console.log('questi sono i newGames ad una aggiunta: ' + JSON.stringify(newGames));
-    //   this.playableGames = newGames.filter(element => {
-    //     console.log('this.loggedUserEmail: ' + this.loggedUserEmail);
-    //     console.log('element per element: ' + element);
-    //     console.log('element !== this.loggedUserEmail? ' + (element != this.loggedUserEmail));
-    //     console.log('this.loggedEmails.includes(element): ' + this.loggedEmails.includes(element));
-
-    //     return ((element != this.loggedUserEmail)
-    //       // && (!this.activePlayers || this.activePlayers.length <1 || !this.activePlayers.includes(element))
-    //       // && this.loggedEmails
-    //       && this.loggedEmails.includes(element))
-    //   });
-    //   // this.playableGames = this.games;
-    //   console.log('questi sono ora i playable games: ' + this.playableGames);
-    // });
   }
 
   updatePlayableGames() {
@@ -115,8 +80,6 @@ export class GameListComponent implements OnInit, OnDestroy {
   onStartBattle(game: string) {
     this.battleService.startBattle(game);
     console.log('Questo è il parametro game passato: ' + game);
-    // this.battleService.createBoards();
-    // this.router.navigate(['/battle']);
   }
 
   ngOnDestroy() {
@@ -124,6 +87,5 @@ export class GameListComponent implements OnInit, OnDestroy {
     this.gamesSub.unsubscribe();
     this.loggedEmailSub.unsubscribe();
     this.loggedEmailsSub.unsubscribe();
-    // this.playableGamesSub.unsubscribe();
   }
 }

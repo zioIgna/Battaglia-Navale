@@ -37,7 +37,7 @@ app.use((req, res, next) => {
     next();
 })
 
-app.post('/api/messages', (req, res, next) => {
+app.post('/api/messages', checkAuth, (req, res, next) => {
     const richiesta = req.body;
     console.log(richiesta);
     const message = new Message({
@@ -58,7 +58,7 @@ app.post('/api/messages', (req, res, next) => {
     // });
 });
 
-app.get('/api/messages/:email', (req, res, next) => {
+app.get('/api/messages/:email', checkAuth, (req, res, next) => {
     // const messages = [
     //     { id: 'pqwe0rjfa3', autore: 'autore 1', contenuto: 'primo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:34:44.117Z' },
     //     { id: 'weorrs3gu', autore: 'autore 2', contenuto: 'secondo messaggio', destinatario: 'autore 1', timestamp: '2018-07-08T20:35:26.866Z' },
@@ -191,7 +191,7 @@ app.post('/api/users/login', (req, res, next) => {
 
 
 
-app.put('/api/users/switch/:id', (req, res, next) => {
+app.put('/api/users/switch/:id', checkAuth, (req, res, next) => {
     console.log('sono arrivato all\'indirizzo dello switch');
     console.log('questo è il req.body: ', req.body);
     const newRole = req.body.role;
@@ -237,7 +237,7 @@ app.put('/api/users/switch/:id', (req, res, next) => {
 
 })
 
-app.put('/api/users/upgradeBattles/:id', (req, res, next) => {  // gestire l'incremento di partite giocate e vittorie con unico metodo
+app.put('/api/users/upgradeBattles/:id', checkAuth, (req, res, next) => {  // gestire l'incremento di partite giocate e vittorie con unico metodo
   newBattlesCount = req.body.battlesCount + 1;
   User.updateOne({ _id: req.params.id }, {$set: {battlesCount: newBattlesCount}}, (err, raw) => {
     if (err) {
@@ -252,7 +252,7 @@ app.put('/api/users/upgradeBattles/:id', (req, res, next) => {  // gestire l'inc
   });
 })
 
-app.put('/api/users/upgradeScore/:id', (req, res, next) => {
+app.put('/api/users/upgradeScore/:id', checkAuth, (req, res, next) => {
   newVictoriesCount = req.body.score + 1;
   User.updateOne({ _id: req.params.id }, {$set: {score: newVictoriesCount}}, (err, raw) => {
     if (err) {
@@ -267,9 +267,9 @@ app.put('/api/users/upgradeScore/:id', (req, res, next) => {
   });
 })
 
-app.put('/api/users/fights/:id', (req, res, next) => {}); // forse non serve questo metodo
+app.put('/api/users/fights/:id', checkAuth, (req, res, next) => {}); // forse non serve questo metodo
 
-app.delete('/api/users/delete/:id', (req, res, next) => {
+app.delete('/api/users/delete/:id', checkAuth, (req, res, next) => {
     User.deleteOne({ _id: req.params.id }).then(result => {
         console.log(result);
         res.status(200).json({ message: 'User deleted!' });
