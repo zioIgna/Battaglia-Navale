@@ -2,6 +2,13 @@ const app = require("./backend/app");
 const debug = require("debug")("node-angular");
 const http = require("http");
 
+// variabili inserite per implementare l'espunzione di utenti non più raggiungibili
+var Rx = require("rxjs/Rx");
+var source = Rx.Observable.interval(1000).take(20);
+var hot = source.publish();
+hot.connect();
+//
+
 const normalizePort = val => {
     var port = parseInt(val, 10);
 
@@ -72,6 +79,22 @@ io.on('connection', function (socket) {
     socket.on('logged user', function (datiConnessione){
         loggedUsers.push(datiConnessione);
         io.emit('logged user', loggedUsers);
+        io.to(myId).emit('private msg', {msg: 'this is for you ' + myId});  // comando di prova
+        io.to(myId).emit('say hi');
+
+        var subscription1 = hot.subscribe(
+          x => console.log('Observer 1: onNext: %s', x),
+          e => console.log('Observer 1: onError: %s', e),
+          () => console.log('Observer 1: onCompleted'));
+        
+        var subscription2 = hot.subscribe(
+          x => io.to(myId).emit('say hi')
+        );
+
+    });
+
+    socket.on('greetings', function (myMail){
+
     });
 
     socket.on('disconnect', function () {
