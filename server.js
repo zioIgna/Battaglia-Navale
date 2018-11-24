@@ -2,12 +2,7 @@ const app = require("./backend/app");
 const debug = require("debug")("node-angular");
 const http = require("http");
 
-// variabili inserite per implementare l'espunzione di utenti non più raggiungibili
 var Rx = require("rxjs/Rx");
-var source = Rx.Observable.interval(1000).take(20);
-var hot = source.publish();
-hot.connect();
-//
 
 const normalizePort = val => {
     var port = parseInt(val, 10);
@@ -64,6 +59,45 @@ let games = app.games;
 let activePlayers = app.players;    // array di stringhe (emails)
 // fin qui
 
+// variabili inserite per implementare l'espunzione di utenti non più raggiungibili
+var source = Rx.Observable.interval(120000);  // .take(7) observable per chiedere di confermare presenza
+var hot = source.publish();
+hot.connect();
+  // observable per eliminare chi non ha confermato la presenza
+var source2 = Rx.Observable.interval(480000).map(n => { // .take(3) tempo doppio della richiesta presenza
+  n = findDifference();
+  return n;
+});
+var hot2 = source2.publish();
+hot2.connect();
+let stillLogged = [];   // ci memorizzo le mail di utenti che hanno "confermato la presenza"
+function findDifference(){
+  let difference = [];
+  let loggedUsersEmails = loggedUsers.map(user => {
+    return user.email;
+  });
+  loggedUsersEmails.forEach(element => {
+    if(!stillLogged.includes(element)){
+      difference.push(element);
+    };
+  });
+  let exceedingUsers = difference.length;
+  if(exceedingUsers > 0){
+    console.log('Prima dello splice, i loggedUsers sono: ', loggedUsers);
+    difference.forEach(element => {
+      let index = loggedUsersEmails.indexOf(element);
+      if(index > -1){
+        loggedUsers.splice(index, 1);
+        console.log('Dopo lo splice, i loggedUsers sono: ', loggedUsers);
+      }
+    });
+  };
+  stillLogged = [];
+  return exceedingUsers;
+};
+
+//
+
 server.on("error", onError);
 server.on("listening", onListening);
 server.listen(port, function () {
@@ -78,23 +112,40 @@ io.on('connection', function (socket) {
     console.log("USER CONNECTED...");
     socket.on('logged user', function (datiConnessione){
         loggedUsers.push(datiConnessione);
+        stillLogged.push(datiConnessione.email);  // per segnalare la presenza se loggato dopo il segnale
         io.emit('logged user', loggedUsers);
         io.to(myId).emit('private msg', {msg: 'this is for you ' + myId});  // comando di prova
         io.to(myId).emit('say hi');
 
-        var subscription1 = hot.subscribe(
+        var subscription0 = hot.subscribe(
           x => console.log('Observer 1: onNext: %s', x),
           e => console.log('Observer 1: onError: %s', e),
-          () => console.log('Observer 1: onCompleted'));
+          () => console.log('Observer 1: onCompleted')
+        );
         
-        var subscription2 = hot.subscribe(
+        var subscription1 = hot.subscribe(
           x => io.to(myId).emit('say hi')
+        );
+
+        var subscription2 = hot2.subscribe(
+          x => {
+            console.log('Rilevati  ' + x + ' exceedingUsers');
+            if(x > 0){
+              io.to(myId).emit('logged user', loggedUsers);
+            }
+          },
+          e => console.log('Error from the server: ', e),
+          () => console.log('Values completed')
         );
 
     });
 
-    socket.on('greetings', function (myMail){
-
+    socket.on('greetings', function (data){
+      console.log(data + ' è ancora connesso');
+      if(!stillLogged.includes(data)){
+        stillLogged.push(data);
+      }
+      console.log('Questi utenti hanno confermato la presenza: ' + stillLogged);
     });
 
     socket.on('disconnect', function () {
