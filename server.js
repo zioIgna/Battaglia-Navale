@@ -60,13 +60,13 @@ let activePlayers = app.players;    // array di stringhe (emails)
 // fin qui
 
 // variabili inserite per implementare l'espunzione di utenti non più raggiungibili
-var source = Rx.Observable.interval(120000);  // .take(7) observable per chiedere di confermare presenza
+var source = Rx.Observable.interval(120000);  // observable per chiedere di confermare presenza
 var hot = source.publish();
 hot.connect();
-  // observable per eliminare chi non ha confermato la presenza
-var source2 = Rx.Observable.interval(480000).map(n => { // .take(3) tempo doppio della richiesta presenza
-  n = findDifference();
-  return n;
+// observable per eliminare chi non ha confermato la presenza
+var source2 = Rx.Observable.interval(480000).map(n => { // tempo doppio della richiesta presenza
+  m = findDifference();
+  return m; // si restituisce il numero di utenti non confermati e la loro lista
 });
 var hot2 = source2.publish();
 hot2.connect();
@@ -82,10 +82,17 @@ function findDifference(){
     };
   });
   let exceedingUsers = difference.length;
+  let stillActivePlayers = [];
   if(exceedingUsers > 0){
     console.log('Prima dello splice, i loggedUsers sono: ', loggedUsers);
     difference.forEach(element => {
-      let index = loggedUsersEmails.indexOf(element);
+      if(activePlayers.includes(element)){
+        stillActivePlayers.push(element);
+      };
+      let index = loggedUsers.map(user => {
+        return user.email;
+      }).indexOf(element);
+      // let index = loggedUsersEmails.indexOf(element);
       if(index > -1){
         loggedUsers.splice(index, 1);
         console.log('Dopo lo splice, i loggedUsers sono: ', loggedUsers);
@@ -93,7 +100,8 @@ function findDifference(){
     });
   };
   stillLogged = [];
-  return exceedingUsers;
+  data = {num: exceedingUsers, list: stillActivePlayers};
+  return data;
 };
 
 //
@@ -129,9 +137,10 @@ io.on('connection', function (socket) {
 
         var subscription2 = hot2.subscribe(
           x => {
-            console.log('Rilevati  ' + x + ' exceedingUsers');
-            if(x > 0){
+            console.log('Rilevati  ' + x.num + ' exceedingUsers');
+            if(x.num > 0){
               io.to(myId).emit('logged user', loggedUsers);
+              x.list.forEach(element => io.to(myId).emit('abandoned battle', element));
             }
           },
           e => console.log('Error from the server: ', e),
@@ -275,6 +284,13 @@ io.on('connection', function (socket) {
         }
       }
     }
+
+    // function checkActivePlayers(myEmail){
+    //   if(activePlayers.includes(myEmail)){
+    //     console.log('Chi ha abbandonato stava giocando');
+    //     io.emit('abandoned battle', myEmail);
+    //   }
+    // }
 
     function userAbandonedBattle(){
       let mySelf = loggedUsers.find(obj => obj.connectionId == myId);
