@@ -19,7 +19,7 @@
     </div>
   </div>
   <div *ngFor="let board of boards; let i = index">
-    <mat-card>
+    <mat-card *ngIf="(i == binaryId && positionedShips < 2) || positionedShips > 1">
       <p class="mat-subheading-2">Player: <b>{{board.player.id}}</b></p>
       <table>
         <tr *ngFor="let row of board.tiles; let j = index">
