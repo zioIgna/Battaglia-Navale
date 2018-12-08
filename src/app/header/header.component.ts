@@ -28,14 +28,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onOverview() {
-    if (this.battleService.myBattle) {
+    if (this.battleService.myBattle.length > 0) {
       this.usersService.getConnessione().socket.emit('back to overview');
     }
     this.router.navigate(['/overview']);
   }
 
   onGames() {
-    this.usersService.getConnessione().socket.emit('back to overview');
+    if (this.battleService.myBattle.length > 0) {
+      this.usersService.getConnessione().socket.emit('back to overview');
+    }
     this.router.navigate(['/games']);
   }
 

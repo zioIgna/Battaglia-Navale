@@ -156,7 +156,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.battleService.setBoards([]);
             this.battleService.positionedShips = 0;
             this.battleService.sendEndGameListener(true);
-            this.battleService.myBattle = []; // è giusto "azzerare" questo valore?
+            this.battleService.myBattle = []; // devo "azzerare" questo valore perché segnala se sto combattendo
             this.battleService.sendMyBattleListener(this.battleService.myBattle);
             if (updatedPlayers.playerDisconnected) {
               this.battleService.playerDisconnected = updatedPlayers.playerDisconnected;
