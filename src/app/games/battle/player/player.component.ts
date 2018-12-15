@@ -70,7 +70,6 @@ export class PlayerComponent {
   };
 
   constructor() {
-    // manca l'implementazione di id = idPassato
     this.shipsToPlace.push(this.Cacciatorpediniere01
       // , this.Cacciatorpediniere02,
       // this.Cacciatorpediniere03, this.Cacciatorpediniere04,
@@ -78,7 +77,7 @@ export class PlayerComponent {
       );
   }
 
-  setId(newId) {  // non usata?
+  setId(newId) {  // non usata
     this.id = newId;
   }
 }

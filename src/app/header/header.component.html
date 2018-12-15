@@ -3,7 +3,6 @@
         <a routerLink="/">Battaglia Navale</a>
     </span>
     <span *ngIf="userIsAuthenticated">
-      <!-- <a routerLink="/overview">Battaglia Navale</a> -->
       <button mat-button (click)="onOverview()">Battaglia Navale</button>
     </span>
     <span class="spacer"></span>
@@ -12,7 +11,6 @@
             <a mat-button routerLink="/signup" routerLinkActive="mat-accent">SignUp</a>
         </li>
         <li *ngIf="userIsAuthenticated">
-            <!-- <a mat-button routerLink="/games" routerLinkActive="mat-accent">Games</a> -->
             <button mat-button (click)="onGames()">Games</button>
         </li>
         <li *ngIf="userIsAuthenticated">

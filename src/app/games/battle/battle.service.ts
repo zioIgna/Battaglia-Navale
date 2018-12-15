@@ -20,7 +20,6 @@ export class BattleService implements OnInit {
   boardSize = 10;
   currPlayer = 0;
   private currPlayerListener = new Subject<number>();
-  // currPlayerSub: Subscription;
   endGame = false;
   private endGameListener = new Subject<boolean>();
   hits = 0;
@@ -34,7 +33,6 @@ export class BattleService implements OnInit {
   private playerDisconnectedListener = new Subject<boolean>();
   positionedShips = 0;
   private positionedShipsListener = new Subject<number>();
-  // private activePlayersListener = new Subject<string[]>();
 
   constructor(
     private connection: ConnectionService,
@@ -114,14 +112,6 @@ export class BattleService implements OnInit {
     return this.myBattleListener.next(newBattle);
   }
 
-  // sendActivePlayers(newActivePlayers) {
-  //   this.activePlayersListener.next(newActivePlayers);
-  // }
-
-  // getActivePlayersListener() {
-  //   return this.activePlayersListener.asObservable();
-  // }
-
   createBoards(players) {
     // il primo nell'array myBattle è quello che aveva "dato disponibilità" a giocare, il secondo è quello che "si è unito":
     this.myBattle = [...players.nowPlaying];
@@ -129,7 +119,6 @@ export class BattleService implements OnInit {
     for (let i = 0; i < this.playersNumber; i++) {
         const player = new PlayerComponent();
         player.id = i;
-        // player.score = 0;
         const board = new BoardComponent();
         board.player = player;
         console.log('lo score di questo player è: ' + player.score);
@@ -164,7 +153,6 @@ export class BattleService implements OnInit {
     const players = {nowPlaying: [game, this.usersService.getLoggedEmail()]};
     console.log('Questi sono i players passati: ' + players.nowPlaying);
     this.connection.socket.emit('start battle', players);
-    // this.createBoards();
   }
 
   getMyBattle() {
@@ -172,14 +160,7 @@ export class BattleService implements OnInit {
   }
 
   getPosition(e: any) {
-    // console.dir(e.target);
     console.log(e.target.id);
-    // console.log(e.target.title);
-    // console.log('variabile myBattle = ' + this.myBattle);
-    // console.log('questa è myBattle parsata: ' + JSON.parse(e.target.title));
-    // if (JSON.parse(e.target.title).includes(this.usersService.getLoggedEmail())) {
-    //   console.log('Riuscito!');
-    // }
 
     const id = e.target.id;
     const boardId = +(id.substring(1, 2));
@@ -187,13 +168,10 @@ export class BattleService implements OnInit {
     const col = +(id.substring(3, 4));
     const tile = this.boards[boardId].tiles[row][col];
     const ship = { boardId: boardId, row: row, col: col };
-    // alert('La casella è: ' + JSON.stringify(id) + ' used: ' + JSON.stringify(tile.used) + ' shipId: ' + tile.shipId);
     // fase di posizionamento delle navi:
     if (this.positionedShips < 2) {
       // finché il giocatore ha navi da piazzare e le posiziona nella sua griglia:
       if (boardId === this.connection.binaryId && this.boards[this.connection.binaryId].player.shipsToPlace.length) {
-        // console.log('Questi sono i parametri passati a checkPositioning: ', boardId, ' ', row, ' ', col, ' ',
-        // this.boards[this.connection.binaryId].player.shipsToPlace[0].size, ' ', typeof(row));
         if (this.checkPositioning(boardId, row, col, this.boards[this.connection.binaryId].player.shipsToPlace[0].size,
           this.boards[this.connection.binaryId].player.shipsToPlace[0].id, this.orientation)) {
           const coordinates = {
@@ -291,32 +269,32 @@ export class BattleService implements OnInit {
 
   checkAround(boardId: number, row: number, col: number) {
     return ((row - 1 < 0 ||             // cella sopra
-      (this.boards[boardId].tiles[row - 1][col] // !== undefined
+      (this.boards[boardId].tiles[row - 1][col]
       && this.boards[boardId].tiles[row - 1][col].used === false)) &&
       (row + 1 === this.boardSize ||   // cella sotto
-      (this.boards[boardId].tiles[row + 1][col] // !== undefined
+      (this.boards[boardId].tiles[row + 1][col]
       && this.boards[boardId].tiles[row + 1][col].used === false)) &&
       (col + 1 === this.boardSize ||   // cella dx
-      (this.boards[boardId].tiles[row][col + 1] // !== undefined
+      (this.boards[boardId].tiles[row][col + 1]
       && this.boards[boardId].tiles[row][col + 1].used === false)) &&
       (col - 1 < 0 ||                  // cella sx
-      (this.boards[boardId].tiles[row][col - 1] // !== undefined
+      (this.boards[boardId].tiles[row][col - 1]
       && this.boards[boardId].tiles[row][col - 1].used === false)) &&
-      ( // (row - 1 < 0 && col + 1 === this.boardSize) ||  // cella a NE
+      (                                // cella a NE
       row - 1 < 0 || col + 1 === this.boardSize ||
-      (this.boards[boardId].tiles[row - 1][col + 1] // !== undefined
+      (this.boards[boardId].tiles[row - 1][col + 1]
       && this.boards[boardId].tiles[row - 1][col + 1].used === false)) &&
-      ( // (row + 1 === this.boardSize && col + 1 === this.boardSize) || // cella a SE
+      (                               // cella a SE
       row + 1 === this.boardSize || col + 1 === this.boardSize ||
-      (this.boards[boardId].tiles[row + 1][col + 1] // !== undefined
+      (this.boards[boardId].tiles[row + 1][col + 1]
       && this.boards[boardId].tiles[row + 1][col + 1].used === false))
-      && ( // (row + 1 === this.boardSize && col - 1 < 0) || // cella a SO
+      && (                            // cella a SO
       row + 1 === this.boardSize || col - 1 < 0 ||
-      (this.boards[boardId].tiles[row + 1][col - 1] // !== undefined
+      (this.boards[boardId].tiles[row + 1][col - 1]
       && this.boards[boardId].tiles[row + 1][col - 1].used === false))
-      && ( // (row - 1 < 0 && col - 1 < 0) || // cella a NO
+      && (                            // cella a NO
       row - 1 < 0 || col - 1 < 0 ||
-      (this.boards[boardId].tiles[row - 1][col - 1] // !== undefined
+      (this.boards[boardId].tiles[row - 1][col - 1]
       && this.boards[boardId].tiles[row - 1][col - 1].used === false)));
   }
 
@@ -324,7 +302,6 @@ export class BattleService implements OnInit {
     if (size === 1) {
       this.boards[boardId].tiles[row][col].used = true;
       this.boards[boardId].tiles[row][col].shipId = shipId;
-      // this.sendBoardsListener(this.boards);  // perché non serve questo comando?
     } else if (orientation === 'horizontal') {
       this.boards[boardId].tiles[row][col].used = true;
       this.boards[boardId].tiles[row][col].shipId = shipId;
@@ -346,7 +323,7 @@ export class BattleService implements OnInit {
     this.sendOrientationListener(this.orientation);
   }
 
-  sendBattleResult (players: string[]) {  // , winner: string
+  sendBattleResult (players: string[]) {
     const localUsers = this.usersService.getLocalUsers();
     const updatePlayers = localUsers.filter(val => players.includes(val.email));
     for (const elem of updatePlayers) {   // incremento di 1 il conteggio di partite giocate dai 2 partecipanti
@@ -368,9 +345,7 @@ export class BattleService implements OnInit {
     this.currPlayer === 0 ? winner = players[0] : winner = players[1];
     console.log('Il winner è: ' + winner);
     const winnerObj = updatePlayers.find(elem => elem.email === winner);
-    // console.log('Il winnerObj è: ' + JSON.stringify(winnerObj));
     const victory = {score: winnerObj.score};
-    // console.log('la victory è: ' + victory);
     this.http.put<{   // incremento di 1 il valore "score" del vincitore
       message: string,
       esito: object
@@ -383,121 +358,5 @@ export class BattleService implements OnInit {
         console.log(err);
       });
   }
-
-  // checkNE(boardId: number, row: number, col: number, shipId: string) {
-  //   console.log('questo è row: ', row);
-  //   console.log('row + 1 = ', row, ' ', row + 1 );
-  //   console.log('col + 1 = ', col + 1 );
-  //   console.log('typeof this.boardsize = ' + typeof(this.boardSize));
-  //   console.log('+row + 1 === this.boardSize && +col + 1 === this.boardSize = ',
-  //     (+row + 1 === this.boardSize && +col + 1 === this.boardSize));
-  //   return ((+row - 1 < 0 && +col + 1 === this.boardSize)  // cella a NE
-  //   || +row - 1 < 0 || +col + 1 === this.boardSize
-  //   || (this.boards[boardId].tiles[row - 1][col + 1] // !== undefined
-  //   && this.boards[boardId].tiles[row - 1][col + 1].used === false) ||
-  //   (this.boards[boardId].tiles[row - 1][col + 1] // !== undefined
-  //   && this.boards[boardId].tiles[row - 1][col + 1].shipId === shipId)
-  //   );
-  // }
-
-  // checkAround2(boardId: number, row: number, col: number, shipId: string) {
-  //   if (!+row) {  // prima riga
-  //     if (+col === this.boardSize - 1) {  // ultima colonna
-  //       return this.boards[boardId].tiles[+row - 1][col].used === (false || shipId) &&  // controllo riga sotto
-  //         this.boards[boardId].tiles[row][+col - 1].used === (false || shipId); // controllo colonna precedente
-  //     } else if (!+col) { // prima colonna
-  //       return this.boards[boardId].tiles[+row - 1][col].used === (false || shipId) &&
-  //       // this.boards[boardId].tiles[row][+col - 1].used === (false || shipId) &&
-  //       this.boards[boardId].tiles[row][+col + 1].used === (false || shipId); // controllo colonna successiva
-  //     } else {  // colonna intermedia
-  //       return this.boards[boardId].tiles[+row - 1][col].used === (false || shipId) &&
-  //       this.boards[boardId].tiles[row][+col - 1].used === (false || shipId) &&
-  //       this.boards[boardId].tiles[row][+col + 1].used === (false || shipId);
-  //     }
-  //   } else if (+row === this.boardSize - 1) { // ultima riga
-  //     if (+col === this.boardSize - 1) {  // ultima colonna
-  //       return this.boards[boardId].tiles[+row + 1][col].used === (false || shipId) &&  // controllo riga sopra
-  //         this.boards[boardId].tiles[row][+col - 1].used === (false || shipId); // controllo colonna precedente
-  //     } else if (!+col) { // prima colonna
-  //       return this.boards[boardId].tiles[+row + 1][col].used === (false || shipId) &&  // controllo riga sopra
-  //       true; // da completare
-  //     }
-  //   }
-  // }
-
-  // checkAround(boardId: number, row: number, col: number, shipId: string) {
-  //   return (+row - 1 < 0 ||             // cella sopra
-  //     (this.boards[boardId].tiles[+row - 1][col] && this.boards[boardId].tiles[+row - 1][col].used === false) ||
-  //     (this.boards[boardId].tiles[+row - 1][col] && this.boards[boardId].tiles[+row - 1][col].shipId === shipId)) &&
-  //     (+row + 1 === this.boardSize ||   // cella sotto
-  //     (this.boards[boardId].tiles[+row + 1][col] && this.boards[boardId].tiles[+row + 1][col].used === false) ||
-  //     (this.boards[boardId].tiles[+row + 1][col] && this.boards[boardId].tiles[+row + 1][col].shipId === shipId)) &&
-  //     (+col + 1 === this.boardSize ||   // cella dx
-  //     (this.boards[boardId].tiles[row][+col + 1] && this.boards[boardId].tiles[row][+col + 1].used === false) ||
-  //     (this.boards[boardId].tiles[row][+col + 1] && this.boards[boardId].tiles[row][+col + 1].shipId === shipId)) &&
-  //     (+col - 1 < 0 ||                  // cella sx
-  //     (this.boards[boardId].tiles[row][+col - 1] && this.boards[boardId].tiles[row][+col - 1].used === false) ||
-  //     (this.boards[boardId].tiles[row][+col - 1] && this.boards[boardId].tiles[row][+col - 1].shipId === shipId)) &&
-  //     ((+row - 1 < 0 && +col + 1 === this.boardSize) ||  // cella a NE
-  //     (this.boards[boardId].tiles[+row - 1][+col + 1] && this.boards[boardId].tiles[+row - 1][+col + 1].used === false) ||
-  //     (this.boards[boardId].tiles[+row - 1][+col + 1] && this.boards[boardId].tiles[+row - 1][+col + 1].shipId === shipId)) &&
-  //     ((+row + 1 === this.boardSize && +col + 1 === this.boardSize) || // cella a SE
-  //     (this.boards[boardId].tiles[+row + 1][+col + 1] && this.boards[boardId].tiles[+row + 1][+col + 1].used === false) ||
-  //     (this.boards[boardId].tiles[+row + 1][+col + 1] && this.boards[boardId].tiles[+row + 1][+col + 1].shipId === shipId)) &&
-  //     ((+row + 1 === this.boardSize && +col - 1 < 0) || // cella a SO
-  //     (this.boards[boardId].tiles[+row + 1][+col - 1] && this.boards[boardId].tiles[+row + 1][+col - 1].used === false) ||
-  //     (this.boards[boardId].tiles[+row + 1][+col - 1] && this.boards[boardId].tiles[+row + 1][+col - 1].shipId === shipId)) &&
-  //     ((+row - 1 < 0 && +col - 1 < 0) || // cella a NO
-  //     (this.boards[boardId].tiles[+row - 1][+col - 1] && this.boards[boardId].tiles[+row - 1][+col - 1].used === false) ||
-  //     (this.boards[boardId].tiles[+row - 1][+col - 1] && this.boards[boardId].tiles[+row - 1][+col - 1].shipId === shipId));
-  // }
-
-  // checkAround3(boardId: number, row: number, col: number, shipId: string) {
-  //   return ((row - 1 < 0 ||             // cella sopra
-  //     (this.boards[boardId].tiles[row - 1][col] // !== undefined
-  //     && this.boards[boardId].tiles[row - 1][col].used === false) ||
-  //     (this.boards[boardId].tiles[row - 1][col] // !== undefined
-  //     && this.boards[boardId].tiles[row - 1][col].shipId === shipId)) &&
-  //     (row + 1 === this.boardSize ||   // cella sotto
-  //     (this.boards[boardId].tiles[row + 1][col] // !== undefined
-  //     && this.boards[boardId].tiles[row + 1][col].used === false) ||
-  //     (this.boards[boardId].tiles[row + 1][col] // !== undefined
-  //     && this.boards[boardId].tiles[row + 1][col].shipId === shipId)) &&
-  //     (col + 1 === this.boardSize ||   // cella dx
-  //     (this.boards[boardId].tiles[row][col + 1] // !== undefined
-  //     && this.boards[boardId].tiles[row][col + 1].used === false) ||
-  //     (this.boards[boardId].tiles[row][col + 1] // !== undefined
-  //     && this.boards[boardId].tiles[row][col + 1].shipId === shipId)) &&
-  //     (col - 1 < 0 ||                  // cella sx
-  //     (this.boards[boardId].tiles[row][col - 1] // !== undefined
-  //     && this.boards[boardId].tiles[row][col - 1].used === false) ||
-  //     (this.boards[boardId].tiles[row][col - 1] // !== undefined
-  //     && this.boards[boardId].tiles[row][col - 1].shipId === shipId)) &&
-  //     ((row - 1 < 0 && col + 1 === this.boardSize) ||  // cella a NE
-  //     row - 1 < 0 || col + 1 === this.boardSize ||
-  //     (this.boards[boardId].tiles[row - 1][col + 1] // !== undefined
-  //     && this.boards[boardId].tiles[row - 1][col + 1].used === false) ||
-  //     (this.boards[boardId].tiles[row - 1][col + 1] // !== undefined
-  //     && this.boards[boardId].tiles[row - 1][col + 1].shipId === shipId)) &&
-  //     ((row + 1 === this.boardSize && col + 1 === this.boardSize) || // cella a SE
-  //     row + 1 === this.boardSize || col + 1 === this.boardSize ||
-  //     (this.boards[boardId].tiles[row + 1][col + 1] // !== undefined
-  //     && this.boards[boardId].tiles[row + 1][col + 1].used === false) ||
-  //     (this.boards[boardId].tiles[row + 1][col + 1] // !== undefined
-  //     && this.boards[boardId].tiles[row + 1][col + 1].shipId === shipId))
-  //     && ((row + 1 === this.boardSize && col - 1 < 0) || // cella a SO
-  //     row + 1 === this.boardSize || col - 1 < 0 ||
-  //     (this.boards[boardId].tiles[row + 1][col - 1] // !== undefined
-  //     && this.boards[boardId].tiles[row + 1][col - 1].used === false) ||
-  //     (this.boards[boardId].tiles[row + 1][col - 1] // !== undefined
-  //     && this.boards[boardId].tiles[row + 1][col - 1].shipId === shipId))
-  //     && ((row - 1 < 0 && col - 1 < 0) || // cella a NO
-  //     row - 1 < 0 || col - 1 < 0 ||
-  //     (this.boards[boardId].tiles[row - 1][col - 1] // !== undefined
-  //     && this.boards[boardId].tiles[row - 1][col - 1].used === false) ||
-  //     (this.boards[boardId].tiles[row - 1][col - 1] // !== undefined
-  //     && this.boards[boardId].tiles[row - 1][col - 1].shipId === shipId)));
-  // }
-
 
 }

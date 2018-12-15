@@ -8,7 +8,6 @@ import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth-data.model';
 import { GamesService } from '../games/games.service';
 import { map } from 'rxjs/operators';
-// import { Promise, resolve, reject } from 'q';
 
 @Injectable({
     providedIn: 'root'
@@ -39,7 +38,6 @@ export class UsersService implements OnInit {
       private connessione: ConnectionService,
       private http: HttpClient,
       private router: Router,
-      // private gamesService: GamesService
     ) { }
 
     getConnessione() {
@@ -95,9 +93,8 @@ export class UsersService implements OnInit {
     }
 
     getUsers() {
-        // return this.users;
         this.http.get<{ note: string, users: any }>('http://localhost:3000/api/users')
-        // aggiunta la pipe (15 righe) per trasformare gli oggetti restituiti secondo il modello
+        // aggiunta la pipe per trasformare gli oggetti restituiti secondo il modello
         // di User del frontend, mantendoli observable:
             .pipe(map((usersData) => {
               return {
@@ -122,27 +119,17 @@ export class UsersService implements OnInit {
             });
     }
 
-    // returnUsersEmailsPreLog() {
-    //   const promise = new Promise((resolve, reject) => {
-    //     this.http.get<{ note: string, users: any }>('http://localhost:3000/api/users')
-    //       .toPromise()
-    //       .then()
-    //   });
-    // }
-
     returnUsersEmails(): Promise<string[]> {  // invocata da login() per verificare se utente già loggato
       const promise = new Promise<string[]>((resolve, reject) => {
         this.http.get<{ note: string, users: any }>('http://localhost:3000/api/loggedUsers')
           .toPromise()
           .then(
             res => {
-            //   console.log('la res in promise: ' + JSON.stringify(res));
               let myUsersEmails: string[];
               myUsersEmails = res.users.map(user => {
                 const email = user.email;
                 return email; // così ritorno un array di stringhe (email), non un array di oggetti json
               });
-            //   console.log('myUsersEmails in promise: ' + myUsersEmails);
               resolve(myUsersEmails);
             },
             msg => {
@@ -183,24 +170,16 @@ export class UsersService implements OnInit {
 
     createUser(email: string, password: string) {
         const authData: AuthData = {
-            // id: null,
             email: email,
             password: password,
-            // ruolo: 'basic'
         };
-        // this.users.push(authData);
         console.log(this.users);
-        // this.usersUpdated.next([...this.users]);
         this.http.post<{ note: string, datiSalvati: any, token: string }>('http://localhost:3000/api/users/signup', authData)
             .subscribe((responseData) => {
                 console.log(responseData.note);
                 console.log('questi sono i savedData: ', responseData.datiSalvati);
-                this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: authData });  // linea aggiunta
-                // soluzione alternativa per il login, commentare le pross 2 righe e quella dopo:
-                // const token = responseData.token;
-                // this.token = token;
+                this.connessione.socket.emit('new user', { message: 'nuovo utente registrato', payload: authData });
                 this.login(email, password);
-                // this.router.navigate(['/overview']);
             }, (err) => {
                 console.log(err);
             });
@@ -209,7 +188,6 @@ export class UsersService implements OnInit {
     login(email: string, password: string) {
       const usersEmailsPromise = this.returnUsersEmails();
       usersEmailsPromise.then((data) => {
-        // console.log('i dati da http sono: ' + data);
         if (!data.includes(email)) {
           const authData: AuthData = {
                 email: email,
@@ -220,7 +198,6 @@ export class UsersService implements OnInit {
               email: string, activePlayers: string[], games: string[]
           }>('http://localhost:3000/api/users/login', authData)
               .subscribe(response => {
-                //   console.log('questa è la risposta al login: ', response);
                   const token = response.token;
                   this.token = token;
                   if (token) {
@@ -231,19 +208,15 @@ export class UsersService implements OnInit {
                       // si passa l'info se il soggetto loggato è amministratore o no
                       this.isAdmin = (response.userRole === 'admin');
                       this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
-                    //   console.log('è amministratore? ', response.userRole === 'admin');
                       this.loggedUserId = response.userId;
                       this.loggedUserIdListener.next(this.loggedUserId);
                       console.log('questo è lo id loggato', this.loggedUserId);
                       this.loggedEmail = response.email;
                       this.loggedEmailListener.next(this.loggedEmail);
-                      //
                       this.authStatusListener.next(true);  // questo comando serve solo all'header
                       this.router.navigate(['/overview']);
                       this.connectionId = this.connessione.socket.id;
-                    //   console.log('Nel log-in lo id connessione è: ' + this.connectionId);
                       const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
-                    //   console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
                       this.connessione.socket.emit('logged user', datiConnessione);
                       this.activePlayers = response.activePlayers;
                       this.sendActivePlayers(response.activePlayers);
@@ -310,68 +283,9 @@ export class UsersService implements OnInit {
             );
     }
 
-    // createUserNoPropagate(email: string, password: string) {
-    //     const user: User = {
-    //         id: null,
-    //         email: email,
-    //         password: password,
-    //         ruolo: 'basic'
-    //     };
-    //     this.users.push(user);
-    //     console.log(this.users);
-    //     this.usersUpdated.next([...this.users]);
-    // }
-
 
     ngOnInit() {
         this.connessione.getConnection();
-    }
-
-    login2(email: string, password: string) {   // sostituita con funzione "login()": controlla se utente già loggato
-      if (!this.loggedEmails.includes(email)) {
-        const authData: AuthData = {
-              email: email,
-              password: password
-        };
-        this.http.post<{
-            token: string, expiresIn: number, userRole: string, userId: string,
-            email: string, activePlayers: string[], games: string[]
-        }>('http://localhost:3000/api/users/login', authData)
-            .subscribe(response => {
-                console.log('questa è la risposta al login: ', response);
-                const token = response.token;
-                this.token = token;
-                if (token) {
-                    const expiresInDuration = response.expiresIn;
-                    this.tokenTimer = setTimeout(() => {
-                        this.logout();
-                    }, expiresInDuration * 1000);
-                    // si passa l'info se il soggetto loggato è amministratore o no
-                    this.isAdmin = (response.userRole === 'admin');
-                    this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
-                    console.log('è amministratore? ', response.userRole === 'admin');
-                    this.loggedUserId = response.userId;
-                    this.loggedUserIdListener.next(this.loggedUserId);
-                    console.log('questo è lo id loggato', this.loggedUserId);
-                    this.loggedEmail = response.email;
-                    this.loggedEmailListener.next(this.loggedEmail);
-                    //
-                    this.authStatusListener.next(true);  // questo comando serve solo all'header
-                    this.router.navigate(['/overview']);
-                    this.connectionId = this.connessione.socket.id;
-                    console.log('Nel log-in lo id connessione è: ' + this.connectionId);
-                    const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
-                    console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
-                    this.connessione.socket.emit('logged user', datiConnessione);
-                    this.activePlayers = response.activePlayers;
-                    this.sendActivePlayers(response.activePlayers);
-                    this.games = response.games;
-                    this.sendGames(response.games);
-                }
-            });
-        } else {
-          console.log('L\'utente è già loggato');
-        }
     }
 
 }

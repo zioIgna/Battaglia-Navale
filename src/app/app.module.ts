@@ -12,7 +12,6 @@ import {
   MatButtonModule,
   MatToolbarModule,
   MatExpansionModule,
-  // MatBadgeModule,
   MatSelectModule,
   MatListModule
 } from '@angular/material';
@@ -51,7 +50,6 @@ import { PlayerComponent } from './games/battle/player/player.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
-    // MatBadgeModule,
     MatInputModule,
     MatCardModule,
     MatButtonModule,

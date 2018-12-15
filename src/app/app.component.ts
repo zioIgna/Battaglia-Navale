@@ -26,22 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit() {
-        // if (this.connessione.socket == null) {
-        //   this.connessione.socket = this.connessione.getConnection();
-        // }
         this.connessione.getConnection();
-        // console.log(this.connessione.socket);
-        // socket.on('connection', () => {
-        //   console.log('user connected');
-        // });
-
-        // prova: commento questa funzione per provare una alternativa all'evento "new user"
-        // this.connessione.socket.on('new user', (obj) => {
-        //   this.usersService.users.push(obj.payload);
-        //   this.usersService.usersUpdated.next([...this.usersService.users]);
-        //   // this.usersService.createUserNoPropagate(obj.payload.email, obj.payload.password);  // questa linea non serve
-        //   console.log(obj);
-        // });
 
         this.loggedEmail = this.usersService.getLoggedEmail();
         this.loggedEmailListener = this.usersService.getLoggedEmailListener().subscribe(loggedMail => {
@@ -72,11 +57,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.connessione.socket.on('logged user', (users) => {
           this.usersService.loggedEmails = users.map(user => user.email);
           this.usersService.sendLoggedEmailsPluralListener(this.usersService.loggedEmails);
-          // console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
         });
 
         this.connessione.socket.on('new game', (newGames) => {
-          // this.gamesService.sendGames(newGames);
           console.log('ricevuto il lancio di nuovo game, questa è la lista: ' + newGames);
           this.usersService.games = newGames;
           this.usersService.sendGames(newGames);
@@ -93,19 +76,14 @@ export class AppComponent implements OnInit, OnDestroy {
             this.battleService.sendPlayerDisconnectedListener(false);
             this.battleService.endGame = false;
             this.battleService.sendEndGameListener(false);
-            this.battleService.currPlayer = players.currPlayer; // aggiungere sottoscrizione!!! -> forse non serve
+            this.battleService.currPlayer = players.currPlayer;
             // forse questo non serve: già fatto in 'start battle' (?):
             this.connessione.socket.emit('push myServerBattle', players.nowPlaying);
-            //
             this.battleService.createBoards(players);
           }
         });
 
         this.connessione.socket.on('new ship', (coordinates) => {
-          // console.log('queste sono le coordinates passate dal server: ' + JSON.stringify(coordinates));
-          // console.log('myBattle.includes(this.usersService.getLoggedEmail): '
-          //   + coordinates.myBattle.includes(this.usersService.getLoggedEmail));
-          // console.log('typeof coordinates.myBattle: ' + typeof(coordinates.myBattle));
           const myMail = this.usersService.getLoggedEmail();
           if (coordinates.myBattle.includes(myMail)) {
             console.log('riconosciuta la partita!');
@@ -150,7 +128,6 @@ export class AppComponent implements OnInit, OnDestroy {
           const myMail = this.usersService.getLoggedEmail();
           if (updatedPlayers.myBattle.includes(myMail)) {
             this.battleService.endGame = true;
-            // this.loggedPlayers = 0;
             this.battleService.hits = 0;
             this.battleService.hitsToWin = 0;
             this.battleService.setBoards([]);

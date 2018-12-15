@@ -22,11 +22,6 @@ mongoose.connect('mongodb+srv://igna:PozKas6M2IC1JgR7@cluster0-3typv.mongodb.net
         console.log('Connection failed!');
     });
 
-// const users = [
-//     { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
-//     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
-//     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
-// ];
 
 app.use(bodyParser.json());
 
@@ -53,19 +48,10 @@ app.post('/api/messages', checkAuth, (req, res, next) => {
         .catch((err) => {
             res.status(400).json({ note: 'Errore nel salvataggio del messaggio', msg: err });
         });
-    // res.status(201).json({
-    //     note: 'Messaggio aggiunto con successo'
-    // });
 });
 
 app.get('/api/messages/:email', checkAuth, (req, res, next) => {
-    // const messages = [
-    //     { id: 'pqwe0rjfa3', autore: 'autore 1', contenuto: 'primo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:34:44.117Z' },
-    //     { id: 'weorrs3gu', autore: 'autore 2', contenuto: 'secondo messaggio', destinatario: 'autore 1', timestamp: '2018-07-08T20:35:26.866Z' },
-    //     { id: 'aèdfq0392', autore: 'autore 3', contenuto: 'terzo messaggio', destinatario: 'autore 2', timestamp: '2018-07-08T20:35:54.601Z' }
-    // ];
     console.log('questi sono i parametri email del get messages: ', req.params);
-    // { $or: [{ autore: { $eq: req.params.email } }, { destinatario: { $eq: req.params.email } }] }
     Message.find({ $or: [{ autore: { $eq: req.params.email } }, { destinatario: { $eq: req.params.email } }] }, null, { sort: { timeStamp: -1 } })
         .then(response => {
             res.status(200).json({
@@ -80,24 +66,15 @@ app.get('/api/messages/:email', checkAuth, (req, res, next) => {
         });
 });
 
-// metodi per gestione di utenti (aggiunti per progetto)
+// metodi per gestione di utenti
 app.get('/api/users', checkAuth, (req, res, next) => {
-    // const users = [
-    //     { email: 'primo@prova.it', password: '1234', ruolo: 'basic' },
-    //     { email: 'secondo@prova.it', password: '1234', ruolo: 'basic' },
-    //     { email: 'terzo@prova.it', password: '1234', ruolo: 'basic' }
-    // ];
+
     User.find({}, null, { sort: { score: -1 } }).then((docs) => {
-        // console.log(docs);
         res.status(200).json({
             note: 'Users fetched successfully!',
             users: docs
         });
     });
-    // res.status(200).json({
-    //     note: 'Users fetched successfully!',
-    //     users: users
-    // });
 });
 
 app.get('/api/loggedUsers', (req, res, next) => {
@@ -108,7 +85,6 @@ app.get('/api/loggedUsers', (req, res, next) => {
 });
 
 app.post('/api/users/signup', (req, res, next) => {
-    // const user = req.body;
     console.log('req.body del signup: ', req.body);
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
@@ -121,9 +97,6 @@ app.post('/api/users/signup', (req, res, next) => {
             });
             user.save()
                 .then((savedData) =>
-                // users.push(user);
-                // console.log(user);
-
                 {
                     const token = jwt.sign(
                         { email: savedData.email, userId: savedData._id, role: savedData.role },
@@ -136,8 +109,6 @@ app.post('/api/users/signup', (req, res, next) => {
                         datiSalvati: savedData,
                         token: token
                     });
-
-
                 }
                 ).catch((err) => {
                     res.status(500).json({

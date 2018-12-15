@@ -52,8 +52,6 @@ const server = http.Server(app);    //ho cambiato il metodo da "createServer(app
 
 // costanti aggiunte per supporto a socket.io:
 const io = require("socket.io").listen(server);
-// let loggedIds = [];
-// let loggedEmails = [];
 let loggedUsers = app.loggedUsers; // contiene oggetti così formati: {email: ..., connectionId: ...}
 let games = app.games;
 let activePlayers = app.players;    // array di stringhe (emails)
@@ -92,7 +90,6 @@ function findDifference(){
       let index = loggedUsers.map(user => {
         return user.email;
       }).indexOf(element);
-      // let index = loggedUsersEmails.indexOf(element);
       if(index > -1){
         loggedUsers.splice(index, 1);
         console.log('Dopo lo splice, i loggedUsers sono: ', loggedUsers);
@@ -210,14 +207,11 @@ io.on('connection', function (socket) {
     });
 
     socket.on('start battle', function(players){
-      // activePlayers.push(players.nowPlaying);
       activePlayers.push.apply(activePlayers, players.nowPlaying);
       myServerBattle = players.nowPlaying;
       console.log('ora questa è myServerBattle: ' + myServerBattle);
-      // console.log('nel server, questi sono gli activePlayers: ' + activePlayers);
       const newCurrPlayer = Math.floor(Math.random() * 2);
       const updatedPlayers = {nowPlaying: players.nowPlaying, activePlayers: activePlayers, currPlayer: newCurrPlayer};
-      // console.log('nel server, questi sono gli updatedPlayers: ' + JSON.stringify(updatedPlayers));
       io.emit('start battle', updatedPlayers);
     });
 
@@ -285,13 +279,6 @@ io.on('connection', function (socket) {
       }
     }
 
-    // function checkActivePlayers(myEmail){
-    //   if(activePlayers.includes(myEmail)){
-    //     console.log('Chi ha abbandonato stava giocando');
-    //     io.emit('abandoned battle', myEmail);
-    //   }
-    // }
-
     function userAbandonedBattle(){
       let mySelf = loggedUsers.find(obj => obj.connectionId == myId);
       if(mySelf){
@@ -307,8 +294,6 @@ io.on('connection', function (socket) {
 
     function userDisconnect2(battle){
       console.log('fighterDisconnect triggered');
-      // loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
-        // io.emit('disconnectionEndGame', myServerBattle);
       let myBattleCopy = [...battle];
       const lunghezza = myBattleCopy.length;
       for (let i = 0; i < lunghezza; i++) {
@@ -319,43 +304,12 @@ io.on('connection', function (socket) {
         };
       };
       console.log('ora questi sono gli activePlayers: ' + activePlayers);
-      // console.log('e questa è myServerBattle: ' + myServerBattle);
-      // let index = games.indexOf(myServerBattle[0]);
-      // games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
       console.log('ora questi sono i games: ' + games);
       const updatedPlayers = { myBattle: battle, activePlayers: activePlayers, games: games, playerDisconnected: true};
       io.emit('endGame', updatedPlayers);
       console.log('ora myServerBattle = ' + myServerBattle);
       myServerBattle = undefined;
       console.log('ora myServerBattle = ' + myServerBattle);
-      io.emit('logged user', loggedUsers);
-    };
-
-    function userDisconnect3(){   // non usata
-      console.log('fighterDisconnect triggered');
-      // loggedUsers.splice(loggedUsers.map(function(element) {return element.connectionId}).indexOf(myId), 1);
-      if (myServerBattle) {  // nel caso in cui un utente si disconnetta DURANTE una partita
-        // io.emit('disconnectionEndGame', myServerBattle);
-        let myBattleCopy = [...myServerBattle];
-        const lunghezza = myBattleCopy.length;
-        for (let i = 0; i < lunghezza; i++) {
-          let val = myBattleCopy.pop();
-          let index = activePlayers.indexOf(val);
-          if (index > -1) {
-            activePlayers.splice(index, 1);
-          };
-        };
-        console.log('ora questi sono gli activePlayers: ' + activePlayers);
-        console.log('e questa è myServerBattle: ' + myServerBattle);
-        // let index = games.indexOf(myServerBattle[0]);
-        // games.splice(index, 1); // così elimino dall'elenco dei games il nome del "propositore" della partita terminata
-        console.log('ora questi sono i games: ' + games);
-        const updatedPlayers = { myBattle: myServerBattle, activePlayers: activePlayers, games: games, playerDisconnected: true};
-        io.emit('endGame', updatedPlayers);
-        console.log('ora myServerBattle = ' + myServerBattle);
-        myServerBattle = undefined;
-        console.log('ora myServerBattle = ' + myServerBattle);
-      };
       io.emit('logged user', loggedUsers);
     };
 

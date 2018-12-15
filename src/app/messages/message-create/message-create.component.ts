@@ -11,7 +11,6 @@ import { UsersService } from '../../users/users.service';
     styleUrls: ['./message-create.component.css']
 })
 export class MessageCreateComponent implements OnInit, OnDestroy {
-    // autore = '';
     contenuto = '';
     destinatario = '';
     users: User[] = [];
@@ -32,7 +31,6 @@ export class MessageCreateComponent implements OnInit, OnDestroy {
             timeStamp: new Date().toISOString()
         };
         this.msgService.addMessage(message);
-        // this.autore = '';
         this.contenuto = '';
         this.destinatario = '';
     }
