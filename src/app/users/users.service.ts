@@ -224,10 +224,11 @@ export class UsersService implements OnInit {
                       this.sendGames(response.games);
                   }
               }, (err) => {
+                alert('Credenziali non valide');
                 console.log('Error: user could not login ', err);
               });
           } else {
-            console.log('L\'utente è già loggato');
+            alert('L\'utente è già loggato');
           }
 
       });
