@@ -46,7 +46,7 @@ export class GameListComponent implements OnInit, OnDestroy {
       console.log('Il loggedUserEmail è: ' + this.loggedUserEmail);
     });
     this.connectionId = this.usersService.getConnectionId();
-    console.log('Nella game-list lo id connessione è: ' + this.connectionId);
+    // console.log('Nella game-list lo id connessione è: ' + this.connectionId);
     this.activePlayers = this.usersService.activePlayers;
     this.activePlayersSub = this.usersService.getActivePlayersListener()
       .subscribe(newActivePlayers => {

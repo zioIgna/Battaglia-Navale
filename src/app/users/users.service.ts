@@ -136,13 +136,13 @@ export class UsersService implements OnInit {
           .toPromise()
           .then(
             res => {
-              console.log('la res in promise: ' + JSON.stringify(res));
+            //   console.log('la res in promise: ' + JSON.stringify(res));
               let myUsersEmails: string[];
               myUsersEmails = res.users.map(user => {
                 const email = user.email;
                 return email; // così ritorno un array di stringhe (email), non un array di oggetti json
               });
-              console.log('myUsersEmails in promise: ' + myUsersEmails);
+            //   console.log('myUsersEmails in promise: ' + myUsersEmails);
               resolve(myUsersEmails);
             },
             msg => {
@@ -209,7 +209,7 @@ export class UsersService implements OnInit {
     login(email: string, password: string) {
       const usersEmailsPromise = this.returnUsersEmails();
       usersEmailsPromise.then((data) => {
-        console.log('i dati da http sono: ' + data);
+        // console.log('i dati da http sono: ' + data);
         if (!data.includes(email)) {
           const authData: AuthData = {
                 email: email,
@@ -220,7 +220,7 @@ export class UsersService implements OnInit {
               email: string, activePlayers: string[], games: string[]
           }>('http://localhost:3000/api/users/login', authData)
               .subscribe(response => {
-                  console.log('questa è la risposta al login: ', response);
+                //   console.log('questa è la risposta al login: ', response);
                   const token = response.token;
                   this.token = token;
                   if (token) {
@@ -231,7 +231,7 @@ export class UsersService implements OnInit {
                       // si passa l'info se il soggetto loggato è amministratore o no
                       this.isAdmin = (response.userRole === 'admin');
                       this.adminStatusListener.next(this.isAdmin);    // forse non serve la sottoscriz
-                      console.log('è amministratore? ', response.userRole === 'admin');
+                    //   console.log('è amministratore? ', response.userRole === 'admin');
                       this.loggedUserId = response.userId;
                       this.loggedUserIdListener.next(this.loggedUserId);
                       console.log('questo è lo id loggato', this.loggedUserId);
@@ -241,9 +241,9 @@ export class UsersService implements OnInit {
                       this.authStatusListener.next(true);  // questo comando serve solo all'header
                       this.router.navigate(['/overview']);
                       this.connectionId = this.connessione.socket.id;
-                      console.log('Nel log-in lo id connessione è: ' + this.connectionId);
+                    //   console.log('Nel log-in lo id connessione è: ' + this.connectionId);
                       const datiConnessione = { email: this.loggedEmail, connectionId: this.connectionId};
-                      console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
+                    //   console.log('mando questi dati connessione al login: ' + JSON.stringify(datiConnessione));
                       this.connessione.socket.emit('logged user', datiConnessione);
                       this.activePlayers = response.activePlayers;
                       this.sendActivePlayers(response.activePlayers);

@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
         //   this.connessione.socket = this.connessione.getConnection();
         // }
         this.connessione.getConnection();
-        console.log(this.connessione.socket);
+        // console.log(this.connessione.socket);
         // socket.on('connection', () => {
         //   console.log('user connected');
         // });
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.connessione.socket.on('logged user', (users) => {
           this.usersService.loggedEmails = users.map(user => user.email);
           this.usersService.sendLoggedEmailsPluralListener(this.usersService.loggedEmails);
-          console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
+          // console.log('questi sono i loggedEmails adesso: ' + this.usersService.loggedEmails);
         });
 
         this.connessione.socket.on('new game', (newGames) => {
@@ -102,10 +102,10 @@ export class AppComponent implements OnInit, OnDestroy {
         });
 
         this.connessione.socket.on('new ship', (coordinates) => {
-          console.log('queste sono le coordinates passate dal server: ' + JSON.stringify(coordinates));
-          console.log('myBattle.includes(this.usersService.getLoggedEmail): '
-            + coordinates.myBattle.includes(this.usersService.getLoggedEmail));
-          console.log('typeof coordinates.myBattle: ' + typeof(coordinates.myBattle));
+          // console.log('queste sono le coordinates passate dal server: ' + JSON.stringify(coordinates));
+          // console.log('myBattle.includes(this.usersService.getLoggedEmail): '
+          //   + coordinates.myBattle.includes(this.usersService.getLoggedEmail));
+          // console.log('typeof coordinates.myBattle: ' + typeof(coordinates.myBattle));
           const myMail = this.usersService.getLoggedEmail();
           if (coordinates.myBattle.includes(myMail)) {
             console.log('riconosciuta la partita!');

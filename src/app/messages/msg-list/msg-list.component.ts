@@ -34,7 +34,7 @@ export class MsgListComponent implements OnInit, OnDestroy {
         for (const msg of msgs) {
             if (!(this.soloAutori.includes(msg.autore))) {
                 this.soloAutori.push(msg.autore);
-                console.log(this.soloAutori);
+                // console.log(this.soloAutori);
             }
         }
     }
@@ -189,12 +189,12 @@ export class MsgListComponent implements OnInit, OnDestroy {
     }
 
     sortMessages() {
-        console.log('questi sono i messages: ', this.messages);
+        // console.log('questi sono i messages: ', this.messages);
         this.getAuthors(this.messages);
         console.log('ho ottenuto gli autori: ', this.soloAutori);
         // this.sortedMsgs = this.alloca(this.messages, this.soloAutori);
         this.sortedMsgs = this.groupBy(this.messages, 'autore');
-        console.log('ho spartito i messaggi per autori', this.sortedMsgs);
+        // console.log('ho spartito i messaggi per autori', this.sortedMsgs);
         // console.log('questa è la lunghezza di sortedMsgs: ', this.sortedMsgs.length);
         // console.log('e questo è il primo vettore dentro sortedMsgs: ', this.sortedMsgs[0]);
         // console.log('e questo è il secondo vettore dentro sortedMsgs: ', this.sortedMsgs[1]);

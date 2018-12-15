@@ -172,14 +172,14 @@ export class BattleService implements OnInit {
   }
 
   getPosition(e: any) {
-    console.dir(e.target);
+    // console.dir(e.target);
     console.log(e.target.id);
-    console.log(e.target.title);
-    console.log('variabile myBattle = ' + this.myBattle);
-    console.log('questa è myBattle parsata: ' + JSON.parse(e.target.title));
-    if (JSON.parse(e.target.title).includes(this.usersService.getLoggedEmail())) {
-      console.log('Riuscito!');
-    }
+    // console.log(e.target.title);
+    // console.log('variabile myBattle = ' + this.myBattle);
+    // console.log('questa è myBattle parsata: ' + JSON.parse(e.target.title));
+    // if (JSON.parse(e.target.title).includes(this.usersService.getLoggedEmail())) {
+    //   console.log('Riuscito!');
+    // }
 
     const id = e.target.id;
     const boardId = +(id.substring(1, 2));
@@ -187,13 +187,13 @@ export class BattleService implements OnInit {
     const col = +(id.substring(3, 4));
     const tile = this.boards[boardId].tiles[row][col];
     const ship = { boardId: boardId, row: row, col: col };
-    alert('La casella è: ' + JSON.stringify(id) + ' used: ' + JSON.stringify(tile.used) + ' shipId: ' + tile.shipId);
+    // alert('La casella è: ' + JSON.stringify(id) + ' used: ' + JSON.stringify(tile.used) + ' shipId: ' + tile.shipId);
     // fase di posizionamento delle navi:
     if (this.positionedShips < 2) {
       // finché il giocatore ha navi da piazzare e le posiziona nella sua griglia:
       if (boardId === this.connection.binaryId && this.boards[this.connection.binaryId].player.shipsToPlace.length) {
-        console.log('Questi sono i parametri passati a checkPositioning: ', boardId, ' ', row, ' ', col, ' ',
-        this.boards[this.connection.binaryId].player.shipsToPlace[0].size, ' ', typeof(row));
+        // console.log('Questi sono i parametri passati a checkPositioning: ', boardId, ' ', row, ' ', col, ' ',
+        // this.boards[this.connection.binaryId].player.shipsToPlace[0].size, ' ', typeof(row));
         if (this.checkPositioning(boardId, row, col, this.boards[this.connection.binaryId].player.shipsToPlace[0].size,
           this.boards[this.connection.binaryId].player.shipsToPlace[0].id, this.orientation)) {
           const coordinates = {
@@ -211,7 +211,7 @@ export class BattleService implements OnInit {
           this.boards[this.connection.binaryId].player.opponentShips.push(lastShip);
           this.sendBoardsListener(this.boards);
         } else {
-          console.log('Posizionamento impossibile, seleziona un\'altra casella');
+          alert('Posizionamento impossibile, seleziona un\'altra casella');
         }
         if (this.boards[this.connection.binaryId].player.shipsToPlace.length) {
           console.log('Ti rimangono da posizionare le seguenti navi:');
@@ -231,7 +231,7 @@ export class BattleService implements OnInit {
       if (this.currPlayer === this.connection.binaryId) { // è il mio turno di sparare
         if (boardId !== this.currPlayer) {  // sto sparando nella griglia dell'avversario
           if (this.boards[boardId].tiles[row][col].value === 'X' || this.boards[boardId].tiles[row][col].value === 'M') {
-            console.log('Hai già sparato su questa casella, spara di nuovo!');
+            alert('Hai già sparato su questa casella, spara di nuovo!');
           } else {
             if (this.boards[boardId].tiles[row][col].used === true) { // colpita una nave
               this.boards[boardId].tiles[row][col].value = 'X';   // forse questo non serve perché è anche nel metodo di on('hit',...)
@@ -240,7 +240,7 @@ export class BattleService implements OnInit {
               const hitShipIndex = this.boards[this.currPlayer].player.opponentShips.findIndex((item) => item.id === hitShip);
               this.connection.socket.emit('hit', {myBattle: this.myBattle, ship: ship});
               if (--this.boards[this.currPlayer].player.opponentShips[hitShipIndex].hits === 0) {
-                console.log('Hai affondato la nave ' + hitShip);
+                alert('Hai affondato la nave ' + hitShip);
               }
               this.boards[this.currPlayer].player.score++;
               console.log('Il punteggio attuale è: ' + this.boards[this.currPlayer].player.score);
@@ -265,10 +265,10 @@ export class BattleService implements OnInit {
             }
           }
         } else {  // sto sparando nella mia griglia: errore
-          console.log('Devi sparare nell\'altra griglia!');
+          alert('Devi sparare nell\'altra griglia!');
         }
       } else {
-        console.log('It\'s not your turn to play');     // il giocatore che ha selezionato la casella non ha rispettato il turno
+        alert('It\'s not your turn to play');     // il giocatore che ha selezionato la casella non ha rispettato il turno
       }
     }
 
@@ -276,7 +276,7 @@ export class BattleService implements OnInit {
 
   checkPositioning(boardId: number, row: number, col: number, size: number, shipId: string, orientation: string) {
     if (size === 1) {
-        console.log('a questo punto passo un row che vale: ', row);
+        console.log('checkPositioning, row vale: ', row);
         return this.boards[boardId].tiles[row][col].used === false && this.checkAround(boardId, row, col);
     } else if (orientation === 'horizontal') {
         return +col + size <= this.boardSize && this.boards[boardId].tiles[row][col].used === false
@@ -368,9 +368,9 @@ export class BattleService implements OnInit {
     this.currPlayer === 0 ? winner = players[0] : winner = players[1];
     console.log('Il winner è: ' + winner);
     const winnerObj = updatePlayers.find(elem => elem.email === winner);
-    console.log('Il winnerObj è: ' + JSON.stringify(winnerObj));
+    // console.log('Il winnerObj è: ' + JSON.stringify(winnerObj));
     const victory = {score: winnerObj.score};
-    console.log('la victory è: ' + victory);
+    // console.log('la victory è: ' + victory);
     this.http.put<{   // incremento di 1 il valore "score" del vincitore
       message: string,
       esito: object

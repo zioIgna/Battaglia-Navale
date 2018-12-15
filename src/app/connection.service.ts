@@ -31,7 +31,7 @@ export class ConnectionService {
     getConnection() {
         if (this.socket === null) {
             this.socket = socketIo('http://localhost:3000');
-            console.log('i dati del socket appena connesso sono: ' + this.socket);  // aggiunto per prova
+            // console.log('i dati del socket appena connesso sono: ' + this.socket);  // aggiunto per prova
         }
     }
 
