@@ -168,7 +168,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.connessione.socket.on('say hi', () =>{
           console.log('ho ricevuto lo ordine di salutare');
           const myMail = this.usersService.getLoggedEmail();
-          this.connessione.socket.emit('greetings', myMail);
+          if(myMail){
+            this.connessione.socket.emit('greetings', myMail);
+          }
         });
 
     }
